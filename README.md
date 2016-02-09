@@ -1,6 +1,6 @@
 # isa-marketplace
 
-## UVA ridesharing & delivery services
+### UVA Ridesharing & Delivery Services
 
 ### User stories:
 - As a driver, I want to enter a preset location to which I will be driving so that riders can see and request a ride.
