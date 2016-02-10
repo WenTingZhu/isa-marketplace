@@ -17,3 +17,6 @@
 - As a rider, I want to be able to get a ride at a scheduled future time. 
 - As someone who receives/sends goods, I want to make sure the driver does not open my packages.
 - As someone who receives/sends goods, I want to receive/send goods faster and safer than traditional mail service.
+
+
+### Models: https://docs.google.com/document/d/11De7BG0eWag_XKodsec3UjT_76n3ddE1yZ8IutVF4eg/edit
