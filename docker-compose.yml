@@ -1,24 +1,28 @@
-isa-mysql:
+mysql:
    image: mysql:5.7.10
    environment:
     MYSQL_DATABASE: cs4501
     MYSQL_USER: www
     DATABASE_PASSWORD: l33tp455w0rd
     MYSQL_ROOT_PASSWORD: r00tp455w0rd
-isa-models:
+   container_name: mysql
+models:
    image: tp33/django:1.2
    links:
-     - isa-mysql:db
+     - mysql:db
    volumes:
-     - .:/app
+     - ./rideshare:/app
    ports:
      - "8000:8000"
-   command: python manage.py runmodwsgi --reload-on-change
-isa-exp:
+   command: python manage.py runmodwsgi --reload-on-changes
+   container_name: models
+exp:
    image: tp33/django:1.2
    links:
-     - isa-mysql:db
-isa-web:
+     - mysql:db
+   container_name: exp
+web:
    image: tp33/django:1.2
    links:
-     - isa-mysql:db
+     - mysql:db
+   container_name: web
