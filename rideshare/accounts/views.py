@@ -1,9 +1,30 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-import datetime
+import json
+from django.views.decorators.http import require_http_methods
+
+from accounts.models import UserProfile
 
 def home(request):
-    #return render(request, 'index.html')
-    now = datetime.datetime.now()
-    html = "<html><body>It is now me.</body></html>"
+    html = "<html><head><title>Welcome to Rideshare</title></head><body><h1>Welcome Rideshare!</h1></body></html>"
     return HttpResponse(html)
+
+@require_http_methods(["GET", "POST"])
+def user(request, id):
+    if request.method == 'GET':
+        try:
+            user = UserProfile.objects.get(pk=id)
+            response = {'status': str(200), 'id': str(id), 'email': user.user.email, 'first_name': user.user.first_name, 'last_name': user.user.last_name, 'number': user.phone, 'school': user.school, 'rating': str(user.rating)}
+            return HttpResponse(json.dumps(response), content_type='application/json')
+        except UserProfile.DoesNotExist:
+            response = {'status': '404', 'message': 'User with given user id was not found.'}
+            return HttpResposne(json.dumps(response), content_type='application/json')
+    # request.method == 'POST':
+        # do_something_else
+
+# SERVICES  list
+# GET
+# - name, email, number, school/university, rating (id)
+# POST
+# - create user (name, email, password, phone, school, rating)
+# - update user (name, email, password, phone, school, rating)
