@@ -10,6 +10,12 @@ def home(request):
     u = User.objects.create(first_name=str(now), username=str(now))
     u.save()
 
-    html = "<html><body>{}</body></html>".format(u.first_name)
+    html = "<html><body>CURRENT: {}".format(u.first_name)
+    html = html + "<table style=\"width:100%\">"
+
+
+    for old in User.objects.all():
+        html = html + "<tr><td>" +str(old.username) + "</td></tr>"
+    html = html + "</table></body></html>"
 
     return HttpResponse(html)

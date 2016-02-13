@@ -17,3 +17,10 @@
 - As a rider, I want to be able to get a ride at a scheduled future time.
 - As someone who receives/sends goods, I want to make sure the driver does not open my packages.
 - As someone who receives/sends goods, I want to receive/send goods faster and safer than traditional mail service.
+
+
+### Setup
+1. git clone https://github.com/WenTingZhu/isa-marketplace.git
+2. docker-compose run models python manage.py makemigrations
+3. docker-compose run models python manage.py migrate
+4. docker-compose up
