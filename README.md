@@ -3,11 +3,15 @@
 ### UVA Ridesharing & Delivery Services
 
 ### Setup
-1. git clone https://github.com/WenTingZhu/isa-marketplace.git
-2. docker-compose run models python manage.py makemigrations
-3. docker-compose run models python manage.py migrate
+1. make sure you have docker and docker-compose installed
+2. git clone https://github.com/WenTingZhu/isa-marketplace.git
+3. cd isa-marketplace
 4. docker-compose up
-
+5. Quit by pressing *ctr-c* This sets up the initial connection between the different docker containers
+4. docker-compose run models python manage.py makemigrations
+5. docker-compose run models python manage.py migrate
+6. docker-compose up
+7. You're all done! You can edit the isa-marketplace/rideshare directory. Your changes will be applied in the docker container, and you will see them live on the browser at http://localhost:8000
 
 ### User stories:
 - As a driver, I want to enter a preset location to which I will be driving so that riders can see and request a ride.
