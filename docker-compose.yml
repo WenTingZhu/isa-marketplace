@@ -3,6 +3,7 @@ mysql:
    environment:
     MYSQL_DATABASE: cs4501
     MYSQL_USER: www
+    MYSQL_PASSWORD: l33tp455w0rd
     DATABASE_PASSWORD: l33tp455w0rd
     MYSQL_ROOT_PASSWORD: r00tp455w0rd
    container_name: mysql
