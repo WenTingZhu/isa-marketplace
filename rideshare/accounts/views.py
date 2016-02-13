@@ -1,21 +1,30 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-import datetime
-from django.contrib.auth.models import User
+import json
+from django.views.decorators.http import require_http_methods
+
+from accounts.models import UserProfile
 
 def home(request):
-    #return render(request, 'index.html')
-    now = datetime.datetime.now()
-
-    u = User.objects.create(first_name=str(now), username=str(now))
-    u.save()
-
-    html = "<html><body>CURRENT: {}".format(u.first_name)
-    html = html + "<table style=\"width:100%\">"
-
-
-    for old in User.objects.all():
-        html = html + "<tr><td>" +str(old.username) + "</td></tr>"
-    html = html + "</table></body></html>"
-
+    html = "<html><head><title>Welcome to Rideshare</title></head><body><h1>Welcome to Rideshare!</h1></body></html>"
     return HttpResponse(html)
+
+@require_http_methods(["GET", "POST"])
+def user(request, id):
+    if request.method == 'GET':
+        try:
+            user = UserProfile.objects.get(pk=id)
+            response = {'status': str(200), 'id': str(id), 'email': user.user.email, 'first_name': user.user.first_name, 'last_name': user.user.last_name, 'number': user.phone, 'school': user.school, 'rating': str(user.rating)}
+            return HttpResponse(json.dumps(response), content_type='application/json')
+        except UserProfile.DoesNotExist:
+            response = {'status': '404', 'message': 'User with given user id was not found.'}
+            return HttpResponse(json.dumps(response), content_type='application/json')
+    # request.method == 'POST':
+        # do_something_else
+
+# SERVICES  list
+# GET
+# - name, email, number, school/university, rating (id)
+# POST
+# - create user (name, email, password, phone, school, rating)
+# - update user (name, email, password, phone, school, rating)

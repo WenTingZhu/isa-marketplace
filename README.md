@@ -19,8 +19,12 @@
 - As someone who receives/sends goods, I want to receive/send goods faster and safer than traditional mail service.
 
 
+<<<<<<< HEAD
 ### Setup
 1. git clone https://github.com/WenTingZhu/isa-marketplace.git
 2. docker-compose run models python manage.py makemigrations
 3. docker-compose run models python manage.py migrate
 4. docker-compose up
+=======
+### Models: https://docs.google.com/document/d/11De7BG0eWag_XKodsec3UjT_76n3ddE1yZ8IutVF4eg/edit
+>>>>>>> 7dd765d27196997b5de7686d4c527cf7330abff0
