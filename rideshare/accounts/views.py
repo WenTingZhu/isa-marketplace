@@ -22,7 +22,8 @@ def user(request, id):
             data = {'status': str(HTTP_200_OK), 'id': str(id), 'email': user.user.email, 'first_name': user.user.first_name, 'last_name': user.user.last_name, 'number': user.phone, 'school': user.school, 'rating': str(user.rating)}
             return JsonResponse(data, status=HTTP_200_OK)
         except UserProfile.DoesNotExist:
-            pass
+            data = {'status': str(HTTP_404_NOT_FOUND), 'message': 'user with ' + id + ' was not found.'}
+            return JsonResponse(data, status=HTTP_404_NOT_FOUND)
 
 @require_http_methods(["PUT"])
 def create_user(request):
