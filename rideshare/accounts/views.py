@@ -26,8 +26,8 @@ def user(request, id):
             data = {'message': 'user with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
     else:
-        # data = json.loads(request.body)
-        return JsonResponse(request.body)
+        data = json.loads(request.body)
+        return JsonResponse(data)
 
 @require_http_methods(["PUT"])
 def create_user(request):
