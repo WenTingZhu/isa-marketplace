@@ -9,6 +9,7 @@ def home(request):
     html = "<html><head><title>Welcome to Rideshare</title></head><body><h1>Welcome to Rideshare!</h1></body></html>"
     return HttpResponse(html)
 
+# GET or UPDATE user
 @require_http_methods(["GET", "POST"])
 def user(request, id):
     if request.method == 'GET':
@@ -19,8 +20,12 @@ def user(request, id):
         except UserProfile.DoesNotExist:
             response = {'status': '404', 'message': 'User with given user id was not found.'}
             return HttpResponse(json.dumps(response), content_type='application/json')
-    # request.method == 'POST':
+    else: # request.method == 'POST':
         # do_something_else
+        data = json.loads(request.body)
+        return HttpResponse(json.dumps(data), content_type='application/json')
+
+
 
 # SERVICES  list
 # GET
