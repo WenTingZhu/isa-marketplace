@@ -4,6 +4,7 @@ import json
 from django.views.decorators.http import require_http_methods
 from accounts.status_codes import *
 from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_exempt
 
 
 from accounts.models import UserProfile
@@ -13,7 +14,7 @@ def home(request):
     return HttpResponse(html)
 
 # GET or UPDATE user
-@csrf_protect
+@csrf_exempt
 @require_http_methods(["GET", "POST"])
 def user(request, id):
     if request.method == 'GET':
@@ -22,8 +23,11 @@ def user(request, id):
             data = {'rating': str(user.rating), 'school': user.school, 'last_name': user.user.last_name, 'first_name': user.user.first_name, 'email': user.user.email, 'number': user.phone, 'id': str(id), 'status': str(HTTP_200_OK)}
             return JsonResponse(data, status=HTTP_200_OK)
         except UserProfile.DoesNotExist:
-            data = {'message': 'user with ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
+            data = {'message': 'user with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
+    else:
+        html = "Updating user"
+        return HttpResponse(html)
 
 @require_http_methods(["PUT"])
 def create_user(request):
