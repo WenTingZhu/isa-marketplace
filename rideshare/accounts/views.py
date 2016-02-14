@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 import json
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_protect
 
 from accounts.models import UserProfile
 
@@ -10,6 +11,7 @@ def home(request):
     return HttpResponse(html)
 
 # GET or UPDATE user
+@csrf_protect
 @require_http_methods(["GET", "POST"])
 def user(request, id):
     if request.method == 'GET':
