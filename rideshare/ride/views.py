@@ -6,7 +6,6 @@ from accounts.status_codes import *
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.csrf import csrf_exempt
 
-from accounts.models import UserProfile
 from ride.models import Ride
 
 @csrf_exempt
@@ -15,7 +14,6 @@ def ride(request, id):
     if request.method == 'GET':
         try:
             ride = Ride.objects.get(pk=id)
-            driver = UserProfilel.objects.get(pk=ride.driver)
             data = {'ride-status': str(ride.status), 'departure': str(ride.departure), 'open-seats': str(ride.openSeats), 'driver': ride.user.user.first_name + ride.user.user.last_name, 'status': str(HTTP_200_OK)}
             return JsonResponse(data, status=HTTP_200_OK)
         except UserProfile.DoesNotExist:
