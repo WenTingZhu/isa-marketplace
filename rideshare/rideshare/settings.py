@@ -77,11 +77,14 @@ WSGI_APPLICATION = 'rideshare.wsgi.application'
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+          'default': {
+          'ENGINE': 'mysql.connector.django',
+          'NAME': 'cs4501',
+          'USER': 'www',
+          'PASSWORD': 'l33tp455w0rd',
+          'HOST': 'db',
+          }
+      }
 
 
 # Internationalization

@@ -6,7 +6,7 @@ from django.views.decorators.http import require_http_methods
 from accounts.models import UserProfile
 
 def home(request):
-    html = "<html><head><title>Welcome to Rideshare</title></head><body><h1>Welcome Rideshare!</h1></body></html>"
+    html = "<html><head><title>Welcome to Rideshare</title></head><body><h1>Welcome to Rideshare!</h1></body></html>"
     return HttpResponse(html)
 
 @require_http_methods(["GET", "POST"])
@@ -18,7 +18,7 @@ def user(request, id):
             return HttpResponse(json.dumps(response), content_type='application/json')
         except UserProfile.DoesNotExist:
             response = {'status': '404', 'message': 'User with given user id was not found.'}
-            return HttpResposne(json.dumps(response), content_type='application/json')
+            return HttpResponse(json.dumps(response), content_type='application/json')
     # request.method == 'POST':
         # do_something_else
 
