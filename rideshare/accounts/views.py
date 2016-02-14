@@ -19,10 +19,10 @@ def user(request, id):
     if request.method == 'GET':
         try:
             user = UserProfile.objects.get(pk=id)
-            data = {'status': str(HTTP_200_OK), 'id': str(id), 'email': user.user.email, 'first_name': user.user.first_name, 'last_name': user.user.last_name, 'number': user.phone, 'school': user.school, 'rating': str(user.rating)}
+            data = {'rating': str(user.rating), 'school': user.school, 'last_name': user.user.last_name, 'first_name': user.user.first_name, 'email': user.user.email, 'number': user.phone, 'id': str(id), 'status': str(HTTP_200_OK)}
             return JsonResponse(data, status=HTTP_200_OK)
         except UserProfile.DoesNotExist:
-            data = {'status': str(HTTP_404_NOT_FOUND), 'message': 'user with ' + id + ' was not found.'}
+            data = {'message': 'user with ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
 
 @require_http_methods(["PUT"])
