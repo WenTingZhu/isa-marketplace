@@ -3,6 +3,8 @@ from django.http import HttpResponse, JsonResponse
 import json
 from django.views.decorators.http import require_http_methods
 from accounts.status_codes import *
+from django.views.decorators.csrf import csrf_protect
+
 
 from accounts.models import UserProfile
 
@@ -10,6 +12,8 @@ def home(request):
     html = "<html><head><title>Welcome to Rideshare</title></head><body><h1>Welcome to Rideshare!</h1></body></html>"
     return HttpResponse(html)
 
+# GET or UPDATE user
+@csrf_protect
 @require_http_methods(["GET", "POST"])
 def user(request, id):
     if request.method == 'GET':
@@ -18,11 +22,7 @@ def user(request, id):
             data = {'status': str(HTTP_200_OK), 'id': str(id), 'email': user.user.email, 'first_name': user.user.first_name, 'last_name': user.user.last_name, 'number': user.phone, 'school': user.school, 'rating': str(user.rating)}
             return JsonResponse(data, status=HTTP_200_OK)
         except UserProfile.DoesNotExist:
-            data = {'status': str(HTTP_404_NOT_FOUND), 'message': 'User with given user id was not found.'}
-            return JsonResponse(data, status=HTTP_404_NOT_FOUND)
-    elif request.method == 'POST':
-        pass
-
+            pass
 
 @require_http_methods(["PUT"])
 def create_user(request):
