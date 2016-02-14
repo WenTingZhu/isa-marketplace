@@ -27,7 +27,7 @@ def user(request, id):
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
     else:
         data = json.loads(request.body)
-        return JsonResponse(data)
+        return HttpResponse(data, content_type="application/json")
 
 @require_http_methods(["PUT"])
 def create_user(request):
