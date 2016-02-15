@@ -22,7 +22,7 @@ class RideRequest(models.Model):
 	passenger = models.ForeignKey(UserProfile, models.SET_NULL, null=True)
 	ride = models.ForeignKey(Ride, models.SET_NULL, null=True)
 	driverConfirm = models.BooleanField()
-	archived = models.BooleanField()
+	rideConfirm = models.BooleanField()
 
 class DropoffLocation(models.Model):
 	name = models.CharField(max_length=500)
