@@ -58,7 +58,7 @@ def create_ride_request(request):
 def create_ride(request):
     data = json.loads(request.body.decode("utf-8"))
     # driver = UserProfile.objects.get(user=request.user)
-    new_ride = Ride.create(driver=data['driver'], openSeats=data['open_seats'], departure=data['departure'], status=0)
+    new_ride = Ride(driver=data['driver'], openSeats=data['open_seats'], departure=data['departure'], status=0)
     new_ride.save()
     dataresult = {'status': str(HTTP_201_CREATED),'id': str(new_rid.id), 'open_seats': new_ride.openSeats, 'departure': new_ride.departure}
     return JsonResponse(dataresult, status=HTTP_201_CREATED)
