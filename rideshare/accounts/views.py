@@ -41,6 +41,7 @@ def create_user(request):
     return JsonResponse(dataresult, status=HTTP_201_CREATED)
 
 
+<<<<<<< HEAD
 @csrf_exempt
 @require_http_methods(["PUT"])
 def create_ride(request, user_id):
@@ -51,6 +52,8 @@ def create_ride(request, user_id):
     dataresult = {'status': str(HTTP_201_CREATED),'id': str(new_ride.id), 'open_seats': new_ride.openSeats, 'departure': new_ride.departure}
     return JsonResponse(dataresult, status=HTTP_201_CREATED)
 
+=======
+>>>>>>> 092b3854ab1fda2aa4ee5b41dbb2796c1f32fcb4
 
 # SERVICES  list
 # GET
