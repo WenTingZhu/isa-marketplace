@@ -67,8 +67,14 @@ def create_user(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def delete_user(request, id):
-    user = UserProfile.objects.get(pk=id)
-    user.delete()
+    try:
+        user = UserProfile.objects.get(pk=id)
+        user.delete()
+        data = {'status': str(HTTP_204_NO_CONTENT)}
+        return JsonResponse(data, status=HTTP_204_NO_CONTENT)
+    except UserProfile.DoesNotExist:
+        data = {'message': 'user with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
+        return JsonResponse(data, status=HTTP_404_NOT_FOUND)
 
 
 # SERVICES  list

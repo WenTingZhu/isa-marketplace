@@ -56,9 +56,14 @@ def create_ride(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def delete_ride(request, id):
-    ride = Ride.objects.get(pk=id)
-    ride.delete()
-
+    try:
+        ride = Ride.objects.get(pk=id)
+        ride.delete()
+        data = {'status': str(HTTP_204_NO_CONTENT)}
+        return JsonResponse(data, status=HTTP_204_NO_CONTENT)
+    except UserProfile.DoesNotExist:
+        data = {'message': 'ride with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
+        return JsonResponse(data, status=HTTP_404_NOT_FOUND)
 
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
