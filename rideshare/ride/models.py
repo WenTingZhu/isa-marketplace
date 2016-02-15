@@ -16,7 +16,7 @@ class DropoffLocation(models.Model):
 	zipcode = models.IntegerField()
 
 class Ride(models.Model):
-	driver = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True, related_name='ride_driver')
+	driver = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True)
 	openSeats = models.IntegerField()
 	departure = models.DateTimeField()
 	status = models.IntegerField(choices=STATUS_CHOICES)
