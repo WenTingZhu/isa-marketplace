@@ -17,7 +17,7 @@ def ride(request, id):
             driver = UserProfile.objects.get(pk=ride.driver.pk)
             passengers = ride.passenger.all()
             dropoffLocations = ride.dropoffLocation.all()
-            data = {'ride-status': str(ride.status), 'dropOffLocations': str(dropoffLocations), 'passengers': str(passengers), 'departure': str(ride.departure), 'open-seats': str(ride.openSeats), 'driver': str(driver), 'status': str(HTTP_200_OK)}
+            data = {'ride_status': str(ride.status), 'dropOffLocations': str(dropoffLocations), 'passengers': str(passengers), 'departure': str(ride.departure), 'open-seats': str(ride.openSeats), 'driver': str(driver), 'status': str(HTTP_200_OK)}
             return JsonResponse(data, status=HTTP_200_OK)
         except Ride.DoesNotExist:
             data = {'message': 'ride with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
@@ -26,15 +26,15 @@ def ride(request, id):
         data = json.loads(request.body.decode("utf-8"))
         try:
             ride = Ride.objects.get(pk=id)
-            if data['driver']:
+            if not data.get('driver', "") == "":
                 driver = UserProfile.objects.get(pk=data['driver'])
                 ride.driver = driver
-            if data['open_seats']:
+            if not data.get('open_seats', "") == "":
                 ride.openSeats = data['open_seats']
-            if data['departure']:
+            if not data.get('departure', "") == "":
                 ride.departure = data['departure']
-            if data['rating']:
-                ride.rating = data['rating']
+            if not data.get('ride_status', "") == "":
+                ride.ride_status = data['ride_status']
             ride.save()
             data = {'status': str(HTTP_204_NO_CONTENT)}
             return JsonResponse(data, status=HTTP_204_NO_CONTENT)

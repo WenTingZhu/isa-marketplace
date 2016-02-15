@@ -30,19 +30,21 @@ def user(request, id):
         data = json.loads(request.body.decode("utf-8"))
         try:
             user = UserProfile.objects.get(pk=id)
-            if data['email']:
+            if not data.get('email', "") == "":
                 user.user.email = data['email']
                 user.user.username = data['email']
-            if data['password']:
+            if not data.get('password', "") == "":
                 user.user.password = data['password']
-            if data['first_name']:
+            if not data.get('first_name', "") == "":
                 user.user.first_name = data['first_name']
-            if data['last_name']:
+            if not data.get('last_name', "") == "":
                 user.user.last_name = data['last_name']
-            if data['phone']:
+            if not data.get('phone', "") == "":
                 user.phone = data['phone']
-            if data['school']:
+            if not data.get('school', "") == "":
                 user.school = data['school']
+            if not data.get('rating', "") == "":
+                user.school = data['rating']
             user.user.save()
             user.save()
             data = {'status': str(HTTP_204_NO_CONTENT)}
