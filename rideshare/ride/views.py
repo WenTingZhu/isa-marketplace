@@ -30,7 +30,7 @@ def ride(request, id):
                 driver = UserProfile.objects.get(pk=data['driver'])
                 ride.driver = driver
             if data['open-seats']:
-                ride.openSeats = data['openSeats']
+                ride.openSeats = data['open-seats']
             if data['departure']:
                 ride.departure = data['departure']
             if data['rating']:
