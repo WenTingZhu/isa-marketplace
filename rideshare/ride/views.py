@@ -14,7 +14,7 @@ def ride(request, id):
     if request.method == 'GET':
         try:
             ride = Ride.objects.get(pk=id)
-            driver = UserProfile.objects.get(pk=ride.driver)
+            driver = Ride.driver
             passengers = ride.passengers.all()
             dropoffLocations = ride.dropoffLocations.all()
             data = {'ride-status': str(ride.status), 'dropOffLocations': str(dropOffLocations), 'passengers': str(passengers), 'departure': str(ride.departure), 'open-seats': str(ride.openSeats), 'driver':driver.user.first_name + driver.user.last_name, 'status': str(HTTP_200_OK)}
