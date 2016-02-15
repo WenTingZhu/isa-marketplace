@@ -42,20 +42,6 @@ def create_user(request):
     return JsonResponse(dataresult, status=HTTP_201_CREATED)
 
 
-<<<<<<< HEAD
-@csrf_exempt
-@require_http_methods(["PUT"])
-def create_ride(request, user_id):
-    data = json.loads(request.body.decode("utf-8"))
-    driver = UserProfile.objects.get(pk=user_id)
-    new_ride = Ride.objects.create(driver=driver, openSeats=data['open_seats'], departure=data['departure'], status=0)
-    new_ride.save()
-    dataresult = {'status': str(HTTP_201_CREATED),'id': str(new_ride.id), 'open_seats': new_ride.openSeats, 'departure': new_ride.departure}
-    return JsonResponse(dataresult, status=HTTP_201_CREATED)
-
-=======
->>>>>>> 092b3854ab1fda2aa4ee5b41dbb2796c1f32fcb4
-
 # SERVICES  list
 # GET
 # - name, email, number, school/university, rating (id)
