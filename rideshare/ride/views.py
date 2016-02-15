@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.csrf import csrf_exempt
 
 from ride.models import Ride
+from accounts.models import UserProfile
 
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
