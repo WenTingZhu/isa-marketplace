@@ -20,6 +20,7 @@ def user(request, id):
     if request.method == 'GET':
         try:
             user = UserProfile.objects.get(pk=id)
+            # rides = user.Ride_set.all()
             data = {'rating': str(user.rating), 'school': user.school, 'last_name': user.user.last_name, 'first_name': user.user.first_name, 'email': user.user.email, 'number': user.phone, 'id': str(id), 'status': str(HTTP_200_OK)}
             return JsonResponse(data, status=HTTP_200_OK)
         except UserProfile.DoesNotExist:

@@ -16,7 +16,9 @@ def ride(request, id):
         try:
             ride = Ride.objects.get(pk=id)
             driver = UserProfile.objects.get(pk=ride.driver)
-            data = {'ride-status': str(ride.status), 'departure': str(ride.departure), 'open-seats': str(ride.openSeats), 'driver':driver.user.first_name + driver.user.last_name, 'status': str(HTTP_200_OK)}
+            passengers = ride.passengers.all()
+            dropoffLocations = ride.dropoffLocations.all()
+            data = {'ride-status': str(ride.status), 'dropOffLocations': str(dropOffLocations), 'passengers': str(passengers), 'departure': str(ride.departure), 'open-seats': str(ride.openSeats), 'driver':driver.user.first_name + driver.user.last_name, 'status': str(HTTP_200_OK)}
             return JsonResponse(data, status=HTTP_200_OK)
         except Ride.DoesNotExist:
             data = {'message': 'ride with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
