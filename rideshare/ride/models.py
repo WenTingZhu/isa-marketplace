@@ -13,7 +13,7 @@ class Ride(models.Model):
 	openSeats = models.IntegerField()
 	departure = models.DateTimeField()
 	status = models.IntegerField(choices=STATUS_CHOICES)
-	passenger = models.ManyToManyField(UserProfile, on_delete=models.SET_NULL)
+	passenger = models.ManyToManyField(UserProfile)
 	dropoffLocation = models.ManyToManyField(DropoffLocation)
 
 class RideRequest(models.Model):
