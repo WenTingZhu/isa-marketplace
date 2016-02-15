@@ -64,6 +64,12 @@ def create_user(request):
     dataresult = {'status': str(HTTP_201_CREATED),'id': str(new_user_profile.id), 'email': new_user_profile.user.email, 'first_name': new_user_profile.user.first_name, 'last_name': new_user_profile.user.last_name, 'phone': new_user_profile.phone, 'school': new_user_profile.school, 'rating': str(new_user_profile.rating)}
     return JsonResponse(dataresult, status=HTTP_201_CREATED)
 
+@csrf_exempt
+@require_http_methods(["POST"])
+def delete_user(request, id):
+    user = UserProfile.objects.get(pk=id)
+    user.delete()
+
 
 # SERVICES  list
 # GET
