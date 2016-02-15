@@ -16,11 +16,11 @@ class Ride(models.Model):
 
 class RidePassenger(models.Model):
 	passenger = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True)
-	ride = models.ForeignKey(Ride, models.SET_NULL, null=True)
+	ride = models.ForeignKey(Ride, on_delete=models.SET_NULL, null=True)
 
 class RideRequest(models.Model):
 	passenger = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True)
-	ride = models.ForeignKey(Ride, models.SET_NULL, null=True)
+	ride = models.ForeignKey(Ride, on_delete=models.SET_NULL, null=True)
 	driverConfirm = models.BooleanField()
 	rideConfirm = models.BooleanField()
 
