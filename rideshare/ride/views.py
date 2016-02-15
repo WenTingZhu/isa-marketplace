@@ -14,9 +14,9 @@ def ride(request, id):
     if request.method == 'GET':
         try:
             ride = Ride.objects.get(pk=id)
-            data = {'ride-status': str(ride.status), 'departure': str(ride.departure), 'open-seats': str(ride.openSeats), 'driver': ride.user.user.first_name + ride.user.user.last_name, 'status': str(HTTP_200_OK)}
+            data = {'ride-status': str(ride.status), 'departure': str(ride.departure), 'open-seats': str(ride.openSeats), 'driver': ride.driver.user.first_name + ride.user.user.last_name, 'status': str(HTTP_200_OK)}
             return JsonResponse(data, status=HTTP_200_OK)
-        except UserProfile.DoesNotExist:
+        except Ride.DoesNotExist:
             data = {'message': 'ride with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
     else:
