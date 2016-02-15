@@ -27,8 +27,27 @@ def user(request, id):
             data = {'message': 'user with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
     else:
-        data = json.loads(request.body.decode())
-        return HttpResponse(data, content_type="application/json")
+        data = json.loads(request.body.decode("utf-8"))
+        try:
+            user = UserProfile.objects.get(pk=id)
+            if data['email']:
+                user.user.email = data['email']
+                user.user.username = data['email']
+            if data['password']:
+                user.user.password = data['password']
+            if data['first_name']:
+                user.user.first_name = data['first_name']
+            if data['last_name']:
+                user.user.email = data['last_name']
+            if data['phone']:
+                user.phone = data['phone']
+            if data['school']:
+                user.school = data['school']
+            user.user.save()
+            user.save()
+        except UserProfile.DoesNotExist:
+            data = {'message': 'user with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
+            return JsonResponse(data, status=HTTP_404_NOT_FOUND)
 
 @csrf_exempt
 @require_http_methods(["PUT"])
