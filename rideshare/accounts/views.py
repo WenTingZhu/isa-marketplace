@@ -45,6 +45,8 @@ def user(request, id):
                 user.school = data['school']
             user.user.save()
             user.save()
+            data = {'status': str(HTTP_204_NO_CONTENT)}
+            return JsonResponse(data, status=HTTP_204_NO_CONTENT)
         except UserProfile.DoesNotExist:
             data = {'message': 'user with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
