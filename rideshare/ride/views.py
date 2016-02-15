@@ -23,8 +23,24 @@ def ride(request, id):
             data = {'message': 'ride with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
     else:
-        html = "<html><body><h1>update ride</h1></body></html>"
-        return HttpResponse(html)
+        data = json.loads(request.body.decode("utf-8"))
+        try:
+            ride = Ride.objects.get(pk=id)
+            if data['driver']:
+                driver = UserProfile.objects.get(pk=data['driver'])
+                ride.driver = driver
+            if data['openSeats']:
+                ride.openSeats = data['openSeats']
+            if data['departure']:
+                ride.departure = data['departure']
+            if data['rating']:
+                ride.rating = data['rating']
+            ride.save()
+            data = {'status': str(HTTP_204_NO_CONTENT)}
+            return JsonResponse(data, status=HTTP_204_NO_CONTENT)
+        except UserProfile.DoesNotExist:
+            data = {'message': 'ride with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
+            return JsonResponse(data, status=HTTP_404_NOT_FOUND)
 
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
