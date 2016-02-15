@@ -29,7 +29,7 @@ def ride(request, id):
             if data['driver']:
                 driver = UserProfile.objects.get(pk=data['driver'])
                 ride.driver = driver
-            if data['openSeats']:
+            if data['open-seats']:
                 ride.openSeats = data['openSeats']
             if data['departure']:
                 ride.departure = data['departure']
