@@ -6,7 +6,6 @@ from accounts.status_codes import *
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.csrf import csrf_exempt
 
-
 from accounts.models import UserProfile
 
 def home(request):
