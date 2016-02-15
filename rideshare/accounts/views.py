@@ -38,7 +38,7 @@ def user(request, id):
             if data['first_name']:
                 user.user.first_name = data['first_name']
             if data['last_name']:
-                user.user.email = data['last_name']
+                user.user.last_name = data['last_name']
             if data['phone']:
                 user.phone = data['phone']
             if data['school']:
