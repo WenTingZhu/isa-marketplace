@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'accounts.views.home', name='home'),
     url(r'^api/v1/accounts/', include('accounts.urls', namespace='accounts'), name='accounts'),
+    url(r'^api/v1/ride/', include('ride.urls', namespace='ride'), name='ride'),
 ]

@@ -3,7 +3,8 @@ from django.http import HttpResponse, JsonResponse
 import json
 from django.views.decorators.http import require_http_methods
 from accounts.status_codes import *
-from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 
 from accounts.models import UserProfile
@@ -13,21 +14,24 @@ def home(request):
     return HttpResponse(html)
 
 # GET or UPDATE user
-@csrf_protect
+@csrf_exempt
 @require_http_methods(["GET", "POST"])
 def user(request, id):
     if request.method == 'GET':
         try:
             user = UserProfile.objects.get(pk=id)
-            data = {'status': str(HTTP_200_OK), 'id': str(id), 'email': user.user.email, 'first_name': user.user.first_name, 'last_name': user.user.last_name, 'number': user.phone, 'school': user.school, 'rating': str(user.rating)}
+            data = {'rating': str(user.rating), 'school': user.school, 'last_name': user.user.last_name, 'first_name': user.user.first_name, 'email': user.user.email, 'number': user.phone, 'id': str(id), 'status': str(HTTP_200_OK)}
             return JsonResponse(data, status=HTTP_200_OK)
         except UserProfile.DoesNotExist:
-            data = {'status': str(HTTP_404_NOT_FOUND), 'message': 'user with ' + id + ' was not found.'}
+            data = {'message': 'user with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
+    else:
+        data = json.loads(request.body.decode())
+        return HttpResponse(data, content_type="application/json")
 
 @csrf_exempt
 @require_http_methods(["PUT"])
-def create_user(request):    
+def create_user(request):
     data = json.loads(request.body.decode("utf-8"))
     new_user = User.objects.create_user(username=data['email'], email=data['email'], password=data['password'], first_name=data['first_name'], last_name=data['last_name'])
     new_user_profile = UserProfile(user=new_user, phone=data['phone'], school=data['school'], rating=0)

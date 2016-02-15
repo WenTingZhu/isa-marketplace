@@ -1,5 +1,5 @@
 from django.db import models
-from accounts import UserProfile
+from accounts.models import UserProfile
 
 STATUS_CHOICES = (
 	(0, 'open'),
@@ -17,7 +17,7 @@ class Ride(models.Model):
 class RidePassenger(models.Model):
 	passenger = models.ForeignKey(UserProfile, models.SET_NULL, null=True)
 	ride = models.ForeignKey(Ride, models.SET_NULL, null=True)
-	
+
 class RideRequest(models.Model):
 	passenger = models.ForeignKey(UserProfile, models.SET_NULL, null=True)
 	ride = models.ForeignKey(Ride, models.SET_NULL, null=True)
@@ -25,13 +25,12 @@ class RideRequest(models.Model):
 	archived = models.BooleanField()
 
 class DropoffLocation(models.Model):
-	name = models.CharField()
-	address = models.CharField()
-	city = models.CharField()
-	state = models.CharField()
+	name = models.CharField(max_length=500)
+	address = models.CharField(max_length=500)
+	city = models.CharField(max_length=100)
+	state = models.CharField(max_length=2)
 	zipcode = models.IntegerField()
 
 class RideDropoffLocation(models.Model):
 	dropoffLocation = models.ForeignKey(DropoffLocation, models.SET_NULL, null=True)
 	ride = models.ForeignKey(Ride, models.SET_NULL, null=True)
-	
