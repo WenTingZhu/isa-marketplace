@@ -44,7 +44,7 @@ def user(request, id):
             if not data.get('school', "") == "":
                 user.school = data['school']
             if not data.get('rating', "") == "":
-                user.school = data['rating']
+                user.rating = data['rating']
             user.user.save()
             user.save()
             data = {'status': str(HTTP_204_NO_CONTENT)}
