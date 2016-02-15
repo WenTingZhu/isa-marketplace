@@ -9,17 +9,16 @@ STATUS_CHOICES = (
 )
 
 class Ride(models.Model):
-	driver = models.ForeignKey(UserProfile, null=True)
+	driver = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True)
 	openSeats = models.IntegerField()
 	departure = models.DateTimeField()
 	status = models.IntegerField(choices=STATUS_CHOICES)
-	passenger = models.ManyToManyField(UserProfile)
+	passenger = models.ManyToManyField(UserProfile, on_delete=models.SET_NULL)
 	dropoffLocation = models.ManyToManyField(DropoffLocation)
 
-
 class RideRequest(models.Model):
-	passenger = models.ForeignKey(UserProfile, null=True)
-	ride = models.ForeignKey(Ride, null=True)
+	passenger = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True)
+	ride = models.ForeignKey(Ride, on_delete=models.SET_NULL, null=True)
 	driverConfirm = models.BooleanField()
 	rideConfirm = models.BooleanField()
 
