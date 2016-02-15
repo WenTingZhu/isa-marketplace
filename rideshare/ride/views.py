@@ -26,15 +26,6 @@ def ride(request, id):
         return HttpResponse(html)
 
 
-@csrf_exempt
-@require_http_methods(["PUT"])
-def create_ride(request):
-    data = json.loads(request.body.decode("utf-8"))
-    new_ride = Ride.create(username=data['email'], email=data['email'], password=data['password'], first_name=data['first_name'], last_name=data['last_name'])
-    new_ride.save()
-    dataresult = {'status': str(HTTP_201_CREATED),'id': str(new_user_profile.id), 'email': new_user_profile.user.email, 'first_name': new_user_profile.user.first_name, 'last_name': new_user_profile.user.last_name, 'phone': new_user_profile.phone, 'school': new_user_profile.school, 'rating': str(new_user_profile.rating)}
-    return JsonResponse(dataresult, status=HTTP_201_CREATED)
-
 
 
 # SERVICES  list

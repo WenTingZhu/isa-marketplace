@@ -8,12 +8,19 @@ STATUS_CHOICES = (
 	(3, 'completed'),
 )
 
+class DropoffLocation(models.Model):
+	name = models.CharField(max_length=500)
+	address = models.CharField(max_length=500)
+	city = models.CharField(max_length=100)
+	state = models.CharField(max_length=2)
+	zipcode = models.IntegerField()
+
 class Ride(models.Model):
-	driver = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True)
+	driver = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True, related_name='ride_driver')
 	openSeats = models.IntegerField()
 	departure = models.DateTimeField()
 	status = models.IntegerField(choices=STATUS_CHOICES)
-	passenger = models.ManyToManyField(UserProfile)
+	passenger = models.ManyToManyField(UserProfile, related_name='ride_passenger')
 	dropoffLocation = models.ManyToManyField(DropoffLocation)
 
 class RideRequest(models.Model):
@@ -22,9 +29,6 @@ class RideRequest(models.Model):
 	driverConfirm = models.BooleanField()
 	rideConfirm = models.BooleanField()
 
-class DropoffLocation(models.Model):
-	name = models.CharField(max_length=500)
-	address = models.CharField(max_length=500)
-	city = models.CharField(max_length=100)
-	state = models.CharField(max_length=2)
-	zipcode = models.IntegerField()
+
+
+	# contains a Many-toMany to Ride

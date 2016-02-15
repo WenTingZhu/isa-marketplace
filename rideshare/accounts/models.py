@@ -7,5 +7,7 @@ class UserProfile(models.Model):
 	school = models.CharField(blank=True, max_length=50)
 	rating = models.DecimalField(blank=True, max_digits=2, decimal_places=1)
 
+	# contains a Many-toMany to Ride
+
 	def __str__(self):
 		return self.user.username
