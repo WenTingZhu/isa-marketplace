@@ -25,10 +25,10 @@ class RideRequest(models.Model):
 	archived = models.BooleanField()
 
 class DropoffLocation(models.Model):
-	name = models.CharField()
-	address = models.CharField()
-	city = models.CharField()
-	state = models.CharField()
+	name = models.CharField(max_length=500)
+	address = models.CharField(max_length=500)
+	city = models.CharField(max_length=100)
+	state = models.CharField(max_length=2)
 	zipcode = models.IntegerField()
 
 class RideDropoffLocation(models.Model):
