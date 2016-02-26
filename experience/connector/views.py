@@ -1,13 +1,33 @@
-# from django.shortcuts import render
-# from django.http import HttpResponse, JsonResponse
-# import json
-# from django.views.decorators.http import require_http_methods
-# from accounts.status_codes import *
-# from django.views.decorators.csrf import csrf_protect, csrf_exempt
-#
-# from ride.models import Ride, RideRequest
-# from accounts.models import UserProfile
-#
+from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse
+import json
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
+import requests
+from status_codes import *
+import models_url
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def home():
+    return  JsonResponse({}, status=HTTP_200_OK)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def authenticate_user(request):
+    data = json.loads(request.body.decode("utf-8"))
+    url = authenticate_user_url(username, password)
+    resp = requests.post(url)
+    if resp.status == HTTP_202_ACCEPTED:
+        return JsonResponse({'message': 'User authenticated'}, status=HTTP_202_ACCEPTED)
+    else:
+        return JsonResponse({'message': 'Invalid Login'}, status=HTTP_401_UNAUTHORIZED)
+
+
+
+# def create_ride(driver_id, open_seats, departure_time, ride_status):
+#     resp = requests.get()
+
 # @csrf_exempt
 # @require_http_methods(["GET", "POST"])
 # def ride(request, id):
@@ -91,10 +111,10 @@
 #     new_ride_request.save()
 #     dataresult = {'status': str(HTTP_201_CREATED),'id': str(new_ride_request.id)}
 #     return JsonResponse(dataresult, status=HTTP_201_CREATED)
-#
-#
-# # SERVICES  list
-# # GET
-# # - driver, open seats, departure time, status
-# # POST
-# # -
+
+
+# SERVICES  list
+# GET
+# - driver, open seats, departure time, status
+# POST
+# -
