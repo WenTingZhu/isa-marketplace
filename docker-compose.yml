@@ -12,18 +12,28 @@ models:
    links:
      - mysql:db
    volumes:
-     - ./rideshare:/app
+     - ./models:/app
    ports:
      - "8000:8000"
    command: python manage.py runmodwsgi --reload-on-changes
    container_name: models
-exp:
+experience:
    image: tp33/django:1.2
    links:
      - mysql:db
-   container_name: exp
-web:
+   volumes:
+     - ./experience:/app
+   ports:
+     - "8001:8000"
+   command: python manage.py runmodwsgi --reload-on-changes
+   container_name: experience
+frontend:
    image: tp33/django:1.2
    links:
      - mysql:db
-   container_name: web
+   volumes:
+     - ./frontend:/app
+   ports:
+     - "8002:8000"
+   command: python manage.py runmodwsgi --reload-on-changes
+   container_name: frontend
