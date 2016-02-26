@@ -3,7 +3,7 @@
 ### UVA Ridesharing & Delivery Services
 
 This repo contains three independent django applications and a database.
-Folders 
+Folders
 * experience
 * models
 * front-end
@@ -24,6 +24,21 @@ Each has its own folder.
 5. docker-compose run models python manage.py migrate
 6. docker-compose up
 7. You're all done! You can edit the isa-marketplace/rideshare directory. Your changes will be applied in the docker container, and you will see them live on the browser at http://localhost:8000
+
+If you are going to be creating applications and projects or performing any Django operations on your local computer, you may want to create a virtual environment.
+1. cd isa-marketplace
+2. pip install virtualenv
+3. virtualenv ENV -p `which python3.5`
+  * I am using ` ` not ' '. It can be found on the top left of most keyboards. It is usually left of the 1. It is paired with ~.
+  * requires python3.5
+  * ENV folder (and therefore your virtualenv) will **NOT** be pushed to github since it is ignored in .gitignore
+4. source ENV/bin/activate
+5. pip install django==1.8
+6. pip install mod_wsgi
+  * it may be difficult to install mod_wsgi. If so, then go ahead and go into the setting.py file for the project that you want to work on and simply comment out 'mod_wsgi.server' from INSTALLED_APPS.
+  * once you are done modifying the structure of the app, you want to uncomment 'mod_wsgi.server'
+
+
 
 ### User stories:
 - As a driver, I want to enter a preset location to which I will be driving so that riders can see and request a ride.
