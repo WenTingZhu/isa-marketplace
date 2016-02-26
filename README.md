@@ -2,6 +2,18 @@
 
 ### UVA Ridesharing & Delivery Services
 
+This repo contains three independent django applications and a database.
+Folders 
+* experience
+* models
+* front-end
+* mysql
+
+Each has its own folder.
+
+
+
+
 ### Setup
 1. make sure you have docker and docker-compose installed
 2. git clone https://github.com/WenTingZhu/isa-marketplace.git
