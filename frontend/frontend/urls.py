@@ -6,4 +6,5 @@ urlpatterns = [
     url(r'^$', 'frontend.views.index', name="index"),
     url(r'^rides/', 'frontend.views.rides', name="rides"),
     url(r'^login/', 'frontend.views.login', name="login"),
+    url(r'^dashboard/', 'frontend.views.dashboard', name="dashboard"),
 ]

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load staticfiles %}
-{% block title %} Rideshare - Rides {% endblock %}
+{% block title %} Rideshare - Dashboard {% endblock %}
 {% block extrastyle %}
       {% load staticfiles %}
       <link rel="stylesheet" type="text/css" href="{% static "frontend/css/style.css" %}">
@@ -13,6 +13,8 @@
 {% endblock %}
 
 {% block content %}
+  <h3 class="btn btn-lg btn-default">Create a New Ride</h3>
+  <br> <br>
   <div class="panel panel-default" style="text-align: left">
     <div class="panel-heading">Panel heading</div>
     <table class="table table-striped table-hover">
