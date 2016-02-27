@@ -5,7 +5,7 @@ from django.views.decorators.http import require_http_methods
 from accounts.status_codes import *
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.contrib.auth.models import User
-
+from django.contrib.auth import authenticate
 from accounts.models import UserProfile
 from ride.models import Ride
 
@@ -52,6 +52,17 @@ def user(request, id):
         except UserProfile.DoesNotExist:
             data = {'message': 'user with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def authenticate_user(request):
+    data = json.loads(request.body.decode("utf-8"))
+    user = authenticate(username='john', password='secret')
+    if user is not None and user.is_active:
+        # the password verified for the user AND the account has not been disabled
+        return JsonResponse({'message': 'User authenticated'}, status=HTTP_202_ACCEPTED)
+    else:
+        return JsonResponse({'message': 'Invalid Login'}, status=HTTP_401_UNAUTHORIZED)
 
 @csrf_exempt
 @require_http_methods(["PUT"])
