@@ -24,8 +24,30 @@ def rides(request):
 
     # if request.user.is_authenticated():
     #     return redirect('dashboard')
+    rides = [
+    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
+    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
+    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
+    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
+    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
+    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
+    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
+    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
+    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
+    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
+    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
+    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
+    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
+    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
+    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
+    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
+    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
+    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
+    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
+    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
 
-    return render(request, "rides.html", {"key": 7})
+    ]
+    return render(request, "rides.html", {"rides": rides})
 
 @sensitive_post_parameters()
 @csrf_protect
