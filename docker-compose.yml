@@ -18,22 +18,22 @@ models:
    command: python manage.py runmodwsgi --reload-on-changes
    container_name: models
 experience:
-   image: tp33/django:1.2
+   build: ./experience/
    links:
      - mysql:db
    volumes:
      - ./experience:/app
    ports:
      - "8001:8000"
-   command: /bin/bash -c "pip install -r requirements.txt; python manage.py runmodwsgi --reload-on-changes"
+   command: python manage.py runmodwsgi --reload-on-changes
    container_name: experience
 frontend:
-   image: tp33/django:1.2
+   build: ./frontend/
    links:
      - mysql:db
    volumes:
      - ./frontend:/app
    ports:
      - "8002:8000"
-   command: /bin/bash -c "pip install -r requirements.txt; python manage.py runmodwsgi --reload-on-changes"
+   command: python manage.py runmodwsgi --reload-on-changes
    container_name: frontend
