@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-import urllib.request
+# import requests
 import json
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.debug import sensitive_post_parameters
@@ -58,8 +58,8 @@ def login(request):
         password = request.POST['password']
         data = {'username': username, 'password': password}
         url = experience + "autheticate_user/"
-        resp = requests.post(url, data=json.dumps(data).encode('utf8'), headers={'content-type': 'application/json'})
-        if resp.status == 202:
+        response = requests.post(url, data=json.dumps(data).encode('utf8'), headers={'content-type': 'application/json'})
+        if response.status == 202:
             return redirect('dashboard')
         else:
             return redirect('index?invalid_login=True')
