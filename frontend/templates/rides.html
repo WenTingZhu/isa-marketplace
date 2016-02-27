@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}frontend/css/style.css"/>
+    <title>RideShare</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-default">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span clas="icon-bar"></span>
+          <span clas="icon-bar"></span>
+          <span clas="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">RideShare</a>
+      </div>
+      <div id="navbar" class="collapse navbar-collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <!-- <li class="active"><a href="#">Home</a></li> -->
+          <li>
+            <a href="about">About</a>
+          </li>
+          <li class="dropdown {% if invalid_login %} open {% endif %}">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" {% if invalid_login %} aria-expanded="true" {% endif %}>Log In</a>
+            <div class="dropdown-menu">
+              <form class="form" method="POST" action="{% url 'login' %}" id="login-form">
+                {% csrf_token %}
+                <input class="form-control" name="username" id="username" type="text" placeholder="Email" autofocus required>
+                <input class="form-control" name="password" id="password" type="password" placeholder="Password" required><br>
+                {% if invalid_login %}
+                  <p class="errorMessage">
+                    Login Failed. Try again.
+                  </p>
+                {% endif %}
+                <button type="submit" id="login-btn" class="btn btn-secondary round-corners">Login</button>
+              </form>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container" style="text-align: center;">
+      <div class="jumbotron">
+        <h1>
+          RideShare
+        </h1>
+        <h3>
+          Share Rides and Stuff</h3>
+      </div>
+
+      <div class="panel panel-default" style="text-align: left">
+        <div class="panel-heading">Panel heading</div>
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>Driver</th>
+              <th>Available Seats</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Departure Time</th>
+              <th>Join</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ride in rides %}
+            <tr>
+
+              <td>{{ride.driver}}</td>
+              <td>{{ride.available_seats}}</td>
+              <td>{{ride.from}}</td>
+              <td>{{ride.to}}</td>
+              <td>{{ride.departure_time}}</td>
+              <td><span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span></td>
+
+            </tr>
+            {% endfor %}
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  </body>
+</html>

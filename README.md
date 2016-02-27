@@ -57,3 +57,18 @@ If you are going to be creating applications and projects or performing any Djan
 - As someone who receives/sends goods, I want to receive/send goods faster and safer than traditional mail service.
 
 ### Models: https://docs.google.com/document/d/11De7BG0eWag_XKodsec3UjT_76n3ddE1yZ8IutVF4eg/edit
+
+
+### Rides page
+* list of rides
+  * driver
+  * number of available seats
+  * from, to
+  * map -> will be on details page for a given ride
+  * departure time
+  * button to ask for ride
+  * clicking on ride row in table should take you to details page for ride
+* current user information -> display name at top right corner
+* go to home page button
+* menu -> profile page, home page, list of rides page,
+* ride details page 
