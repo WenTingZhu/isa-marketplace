@@ -18,6 +18,14 @@ def index(request):
 
     return render(request, "index.html", {"invalid_login": invalid_login})
 
+def rides(request):
+    # invalid_login = request.session.pop('invalid_login', False)
+
+    # if request.user.is_authenticated():
+    #     return redirect('dashboard')
+
+    return render(request, "rides.html", {"key": 7})
+
 @sensitive_post_parameters()
 @csrf_protect
 @never_cache
