@@ -23,7 +23,15 @@ def authenticate_user(request):
     else:
         return JsonResponse({'message': 'Invalid Login'}, status=HTTP_401_UNAUTHORIZED)
 
-
+@csrf_exempt
+@require_http_methods(["POST"])
+def get_ride(requst, id):
+    url = "http://models/" + "api/ride/ride/" + id +"/"
+    resp = requests.post(url)
+    if resp.status == HTTP_200_OK:
+        return JsonResponse({'message': 'Ride found'}, status=HTTP_200_OK)
+    else:
+        return JsonResponse({'message': 'Ride not foun'}, status=HTTP_401_UNAUTHORIZED)
 
 # def create_ride(driver_id, open_seats, departure_time, ride_status):
 #     resp = requests.get()

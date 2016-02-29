@@ -47,12 +47,12 @@ def dashboard(request):
     rides = []
     url = experience + "get_ride/1/"
     response = requests.get(url)
-    if reponse["status"] == "200":
+    if reponse.status == "200":
         rides.append(response)
-    url = expereince + "get_ride/2/"
-    response = requests.get(url)
-    if reponse["status"] == "200":
-        rides.append(response)
+    # url = expereince + "get_ride/2/"
+    # response = requests.get(url)
+    # if reponse["status"] == "200":
+    #     rides.append(response)
     return render(request, "dashboard.html", {'user': user, "rides": rides, "authenticated": True})
 
 def rides(request):
