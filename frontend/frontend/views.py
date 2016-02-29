@@ -7,11 +7,11 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import login_required
-import frontend.status_codes
+from frontend.status_codes import *
 import requests
 from django.conf import settings
 
-experience = "http://" + settings.EXPERIENCE + "/"
+experience = "http://" + settings.EXPERIENCE + ":8000/"
 
 def index(request):
     invalid_login = request.session.pop('invalid_login', False)
@@ -44,10 +44,11 @@ def login(request):
 # @login_required(login_url='/login')
 def dashboard(request):
     # Grab user data
+    user = "John Doe"
     rides = []
     url = experience + "get_ride/1/"
     response = requests.get(url)
-    if reponse.status == "200":
+    if response.status_code == HTTP_200_OK:
         rides.append(response)
     # url = expereince + "get_ride/2/"
     # response = requests.get(url)

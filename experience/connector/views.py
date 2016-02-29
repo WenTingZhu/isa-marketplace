@@ -4,8 +4,7 @@ import json
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 import requests
-from status_codes import *
-import models_url
+from connector.status_codes import *
 
 @csrf_exempt
 @require_http_methods(["GET"])
@@ -26,12 +25,12 @@ def authenticate_user(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def get_ride(requst, id):
-    url = "http://models/" + "api/ride/ride/" + id +"/"
+    url = "http://models:8000/" + "api/v1/ride/ride/" + id +"/"
     resp = requests.get(url)
-    if resp.status == HTTP_200_OK:
+    if resp.status_code == HTTP_200_OK:
         return JsonResponse({'message': 'Ride found'}, status=HTTP_200_OK)
     else:
-        return JsonResponse({'message': 'Ride not foun'}, status=HTTP_401_UNAUTHORIZED)
+        return JsonResponse({'message': 'Ride not found'}, status=HTTP_401_UNAUTHORIZED)
 
 # def create_ride(driver_id, open_seats, departure_time, ride_status):
 #     resp = requests.get()
