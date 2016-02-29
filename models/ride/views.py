@@ -45,6 +45,9 @@ def ride(request, id):
 @csrf_exempt
 @require_http_methods(["PUT"])
 def create_ride(request):
+    """
+    PUT http://models:8000/api/v1/ride/ride 
+    """
     data = json.loads(request.body.decode("utf-8"))
     # driver = UserProfile.objects.get(user=request.user)
     driver = UserProfile.objects.get(pk=data['driver'])

@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from accounts.models import UserProfile
 from ride.models import Ride
+from django.db.models import Q
 
 def home(request):
     html = "<html><head><title>Welcome to Rideshare!</title></head><body><h1>Welcome to Rideshare!</h1></body></html>"
@@ -67,6 +68,9 @@ def authenticate_user(request):
 @csrf_exempt
 @require_http_methods(["PUT"])
 def create_user(request):
+    """
+    PUT http://localhost:8000/api/v1/accounts/user/
+    """
     data = json.loads(request.body.decode("utf-8"))
     new_user = User.objects.create_user(username=data['email'], email=data['email'], password=data['password'], first_name=data['first_name'], last_name=data['last_name'])
     new_user_profile = UserProfile(user=new_user, phone=data['phone'], school=data['school'], rating=0)
@@ -86,6 +90,23 @@ def delete_user(request, id):
     except UserProfile.DoesNotExist:
         data = {'message': 'user with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
         return JsonResponse(data, status=HTTP_404_NOT_FOUND)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def user_rides(request, id):
+    if request.method == 'GET':
+        try:
+            # user = UserProfile.objects.get(pk=id)
+            # rides = Ride.objects.filter(driver=id)
+            rides = Ride.objects.filter( Q(passenger__id = id) | Q(driver__id = id))
+            data = {'rides': str(rides), 'status': str(HTTP_200_OK)}
+            return JsonResponse(data, status=HTTP_200_OK)
+        except UserProfile.DoesNotExist:
+            data = {'message': 'user with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
+            return JsonResponse(data, status=HTTP_404_NOT_FOUND)
+
+
 
 
 # SERVICES  list
