@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load staticfiles %}
-{% block title %} Rideshare - Rides {% endblock %}
+{% block title %} Rideshare - Ride Detail {% endblock %}
 {% block extrastyle %}
       {% load staticfiles %}
       <link rel="stylesheet" type="text/css" href="{% static "frontend/css/style.css" %}">
@@ -34,8 +34,8 @@
   </form>
   <br> <br>
   <div class="panel panel-default" style="text-align: left">
-    <div class="panel-heading" style="text-align: center;">I am a Driver For</div>
-    {% if driver_rides %}
+    <div class="panel-heading" style="text-align: center;">Ride Details</div>
+    {% if details %}
       <table class="table table-striped table-hover">
         <thead>
           <tr>
@@ -43,59 +43,23 @@
             <th> Driver</th>
             <th> Status </th>
             <th> Available Seats </th>
-            <th> Details </th>
+            <th> Edit </th>
           </tr>
         </thead>
         <tbody>
-          {% for ride in driver_rides %}
           <tr>
-
-            <td>{{ride.departure}}</td>
-            <td>{{ride.driver}}</td>
-            <!-- {% for dropoff in ride.dropoffs %}
-              <td>{{dropoff}}</td>
-            {% endfor %} -->
-            <td> {{ride.status}}</td>
-            <td>{{ride.available_seats}}</td>
-            <td><a href="{% url 'ride_detail' ride.id %}"> <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></a></td>
+            <td>{{details.departure}}</td>
+            <td>{{details.driver}}</td>
+            <td> {{details.ride_status}}</td>
+            <td>{{details.available_seats}}</td>
+            <td><a href="http://google.com"> <span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a></td>
 
           </tr>
-          {% endfor %}
 
         </tbody>
       </table>
     {% else %}
       <div class="panel-body" style="text-align: center"> You currently have no rides as a driver </div>
-    {% endif %}
-  </div>
-  <div class="panel panel-default" style="text-align: left">
-    <div class="panel-heading" style="text-align: center;">I am a Passenger For</div>
-    {% if passenger_rides %}
-      <table class="table table-striped table-hover">
-        <thead>
-          <tr>
-            <th>Date & Time</th>
-            <th>Driver</th>
-            <th># of Passengers</th>
-            <th># of Dropoffs</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for ride in passenger_rides %}
-          <tr>
-
-            <td>{{ride.date}}</td>
-            <td>{{ride.driver}}</td>
-            <th>{{ride.passenger_number}}</th>
-            <th>{{ride.dropoff_number}}</th>
-
-          </tr>
-        {% endfor %}
-
-        </tbody>
-      </table>
-    {% else %}
-      <div class="panel-body" style="text-align: center"> You currently have no rides as a passenger </div>
     {% endif %}
   </div>
   <!-- <div class="jumbotron">

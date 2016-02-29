@@ -9,6 +9,8 @@ from django.contrib.auth import authenticate
 from accounts.models import UserProfile
 from ride.models import Ride
 from django.db.models import Q
+from datetime import datetime
+from django.utils import formats
 
 def home(request):
     html = "<html><head><title>Welcome to Rideshare!</title></head><body><h1>Welcome to Rideshare!</h1></body></html>"
@@ -99,8 +101,28 @@ def user_rides(request, id):
         try:
             # user = UserProfile.objects.get(pk=id)
             # rides = Ride.objects.filter(driver=id)
-            rides = Ride.objects.filter( Q(passenger__id = id) | Q(driver__id = id))
-            data = {'rides': str(rides), 'status': str(HTTP_200_OK)}
+            rides = Ride.objects.filter(driver = id)
+            driver_rides = []
+            for ride in rides:
+                driver_ride = {}
+                driver_ride["id"] = ride.pk
+                driver_ride["driver"] = str(ride.driver)
+                driver_ride["available_seats"] = str(ride.openSeats)
+                driver_ride["departure"] = str("{:%b %d, %Y %H:%M:%S}".format(ride.departure))
+                driver_ride["status"] = str(ride.status)
+                driver_rides.append(driver_ride)
+
+            rides = Ride.objects.filter(passenger =id)
+            passenger_rides = []
+            for ride in rides:
+                passenger_ride = {}
+                passenger_ride["id"] = ride.pk
+                passenger_ride["driver"] = str(ride.driver)
+                passenger_ride["available_seats"] = str(ride.openSeats)
+                passenger_ride["departure"] = str("{:%b %d, %Y}".format(ride.departure))
+                passenger_ride["status"] = str(ride.status)
+                passenger_rides.append(passenger_ride)
+            data = {'driver_rides': json.dumps(driver_rides), 'passenger_rides': json.dumps(passenger_rides), 'status': str(HTTP_200_OK)}
             return JsonResponse(data, status=HTTP_200_OK)
         except UserProfile.DoesNotExist:
             data = {'message': 'user with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}

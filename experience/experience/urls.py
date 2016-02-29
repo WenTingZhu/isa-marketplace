@@ -9,5 +9,6 @@ urlpatterns = [
     url(r'^home/$', 'connector.views.home', name='home'),
     url(r'^authenticate_user/$', 'connector.authenticate_user', name='authenticate_user'),
     url(r'^get_ride/(\d+)/$', 'connector.views.get_ride', name='get_ride'),
+    url(r'^user_rides/(\d+)/$', 'connector.views.user_rides', name='user_rides'),
     url(r'^admin/', include(admin.site.urls)),
 ]

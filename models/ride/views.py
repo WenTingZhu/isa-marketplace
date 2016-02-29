@@ -5,7 +5,7 @@ from django.views.decorators.http import require_http_methods
 from accounts.status_codes import *
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 
-from ride.models import Ride, RideRequest
+from ride.models import Ride, RideRequest, DropoffLocation
 from accounts.models import UserProfile
 
 @csrf_exempt
@@ -17,7 +17,7 @@ def ride(request, id):
             driver = UserProfile.objects.get(pk=ride.driver.pk)
             passengers = ride.passenger.all()
             dropoffLocations = ride.dropoffLocation.all()
-            data = {'ride_status': str(ride.status), 'dropOffLocations': str(dropoffLocations), 'passengers': str(passengers), 'departure': str(ride.departure), 'open-seats': str(ride.openSeats), 'driver': str(driver), 'status': str(HTTP_200_OK)}
+            data = {'ride_status': str(ride.status), 'dropOffLocations': str(dropoffLocations), 'passengers': str(passengers), 'departure': str("{:%b %d, %Y %H:%M:%S}".format(ride.departure)), 'available_seats': str(ride.openSeats), 'driver': str(driver), 'status': str(HTTP_200_OK)}
             return JsonResponse(data, status=HTTP_200_OK)
         except Ride.DoesNotExist:
             data = {'message': 'ride with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
@@ -46,7 +46,7 @@ def ride(request, id):
 @require_http_methods(["PUT"])
 def create_ride(request):
     """
-    PUT http://models:8000/api/v1/ride/ride 
+    PUT http://models:8000/api/v1/ride/ride
     """
     data = json.loads(request.body.decode("utf-8"))
     # driver = UserProfile.objects.get(user=request.user)
@@ -97,7 +97,7 @@ def create_ride_request(request):
 
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
-def ride(request, id):
+def dropoff_location(request, id):
     if request.method == 'GET':
         try:
             dropoff_location = DropoffLocation.objects.get(pk=id)

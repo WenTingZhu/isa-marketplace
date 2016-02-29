@@ -31,11 +31,8 @@
   <br> <br>
   <div class="panel panel-default" style="text-align: left">
     <div class="panel-heading" style="text-align: center;">Upcoming Rides</div>
-      {% if rides %}
-        {% for ride in rides %}
-          <div class="panel-item"> {{ ride }} </div>
-        {% endfor %}
-      {% endif %}
-    </div>
+    <div class="panel-body">{{data}}
+      <!-- <h1> {{ data }} </h1> -->
+    <div>
   </div>
 {% endblock %}

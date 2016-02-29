@@ -45,29 +45,57 @@ def login(request):
 def dashboard(request):
     # Grab user data
     user = "John Doe"
-    rides = []
+    context = {'user': user, "authenticated": True}
     url = experience + "get_ride/1/"
     response = requests.get(url)
     if response.status_code == HTTP_200_OK:
-        rides.append(response)
+        context["data"] = str(response.json())
+    else:
+        context["data"] = "FAILED"
     # url = expereince + "get_ride/2/"
     # response = requests.get(url)
     # if reponse["status"] == "200":
-    #     rides.append(response)
-    return render(request, "dashboard.html", {'user': user, "rides": rides, "authenticated": True})
+    #     rides.append(response
+    return render(request, "dashboard.html", context)
+
+def ride_detail(request, id):
+    user = "John Doe"
+    context = {'user': user, "authenticated": True}
+    url = experience + "get_ride/" + id + "/"
+    response = requests.get(url)
+    if response.status_code == HTTP_200_OK:
+        data = response.json()
+        data = data["data"]
+        context["details"] = data
+        context["data"] = data
+    else:
+        context["data"] = "FAILED"
+    return render(request, "ride-details.html", context)
 
 def rides(request):
     # invalid_login = request.session.pop('invalid_login', False)
 
     # if request.user.is_authenticated():
     #     return redirect('dashboard')
-    driver_rides = [
-    {'date': 'Mar. 2 5PM', 'dropoff_number': 2, 'passenger_number': 3, 'available_seats': 2},
-    {'date': 'Mar. 5 5PM', 'dropoff_number': 1, 'passenger_number': 1, 'available_seats': 4},
-    ]
-    passenger_rides = [
-    {'driver': 'Jane Doe', 'date': 'Mar. 3 8PM', 'passenger_number': 3, 'dropoff_number': 2},
-    {'driver': 'Jane Doe', 'date': 'Mar. 12 3PM', 'passenger_number': 1, 'dropoff_number': 2},
-    ]
     user = "John Doe"
-    return render(request, "rides.html", {"user":user, "authenticated":True, "driver_rides": driver_rides, "passenger_rides": passenger_rides})
+    authenticated = True
+    # ontext = {"user":user, "authenticated":True, "driver_rides": [], "passenger_rides": []]}
+    url = experience + "user_rides/1/"
+    response = requests.get(url)
+    if response.status_code == HTTP_200_OK:
+        data = response.json()
+        data = data["data"]
+        driver_rides = json.loads(data["driver_rides"])
+        passenger_rides = json.loads(data["passenger_rides"])
+
+        return render(request, "rides.html", {'user': user, 'authenticated': authenticated, "data": data, "driver_rides": driver_rides, "passenger_rides": passenger_rides})
+    else:
+        return render(request, "rides.html", {'user': user, 'authenticated': authenticated, 'data': "FAILED"})
+    # driver_rides = [
+    # {'date': 'Mar. 2 5PM', 'dropoff_number': 2, 'passenger_number': 3, 'available_seats': 2},
+    # {'date': 'Mar. 5 5PM', 'dropoff_number': 1, 'passenger_number': 1, 'available_seats': 4},
+    # ]
+    # passenger_rides = [
+    # {'driver': 'Jane Doe', 'date': 'Mar. 3 8PM', 'passenger_number': 3, 'dropoff_number': 2},
+    # {'driver': 'Jane Doe', 'date': 'Mar. 12 3PM', 'passenger_number': 1, 'dropoff_number': 2},
+    # ]"
