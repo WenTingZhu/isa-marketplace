@@ -15,14 +15,14 @@ models:
      - ./models:/app
    ports:
      - "8000:8000"
-   command: python manage.py runmodwsgi --reload-on-changes
+   command: bash -c "python manage.py makemigrations accounts && python manage.py makemigrations ride && python manage.py migrate && python manage.py runmodwsgi --reload-on-changes"
    container_name: models
 experience:
    build: ./experience/
    links:
-     - mysql:db
+     - models:models
    volumes:
-     - ./experience:/app
+     - ./experience:/code
    ports:
      - "8001:8000"
    command: python manage.py runmodwsgi --reload-on-changes
@@ -30,9 +30,9 @@ experience:
 frontend:
    build: ./frontend/
    links:
-     - mysql:db
+     - experience:experience
    volumes:
-     - ./frontend:/app
+     - ./frontend:/code
    ports:
      - "8002:8000"
    command: python manage.py runmodwsgi --reload-on-changes

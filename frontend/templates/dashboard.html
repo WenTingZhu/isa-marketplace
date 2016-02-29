@@ -14,35 +14,14 @@
 
 {% block content %}
   <h3 class="btn btn-lg btn-default">Create a New Ride</h3>
-  <br> <br>
+  <br> <br> <br>
   <div class="panel panel-default" style="text-align: left">
     <div class="panel-heading">Panel heading</div>
-    <table class="table table-striped table-hover">
-      <thead>
-        <tr>
-          <th>Driver</th>
-          <th>Available Seats</th>
-          <th>From</th>
-          <th>To</th>
-          <th>Departure Time</th>
-          <th>Join</th>
-        </tr>
-      </thead>
-      <tbody>
+      {% if rides %}
         {% for ride in rides %}
-        <tr>
-
-          <td>{{ride.driver}}</td>
-          <td>{{ride.available_seats}}</td>
-          <td>{{ride.from}}</td>
-          <td>{{ride.to}}</td>
-          <td>{{ride.departure_time}}</td>
-          <td><span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span></td>
-
-        </tr>
+          <div class="panel-item"> {{ ride }} </div>
         {% endfor %}
-
-      </tbody>
-    </table>
+      {% endif %}
+    </div>
   </div>
 {% endblock %}

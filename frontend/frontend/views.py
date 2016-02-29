@@ -9,8 +9,9 @@ from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import login_required
 import frontend.status_codes
 import requests
+from django.conf import settings
 
-experience = "http://127.0.0.1:8001/"
+experience = "http://" + settings.EXPERIENCE + "/"
 
 def index(request):
     invalid_login = request.session.pop('invalid_login', False)
@@ -43,29 +44,15 @@ def login(request):
 # @login_required(login_url='/login')
 def dashboard(request):
     # Grab user data
-    rides = [
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    ]
-    user = "John Doe"
+    rides = []
+    url = experience + "get_ride/1/"
+    response = requests.get(url)
+    if reponse["status"] == "200":
+        rides.append(response)
+    url = expereince + "get_ride/2/"
+    response = requests.get(url)
+    if reponse["status"] == "200":
+        rides.append(response)
     return render(request, "dashboard.html", {'user': user, "rides": rides, "authenticated": True})
 
 def rides(request):
