@@ -92,6 +92,47 @@ def create_ride_request(request):
     dataresult = {'status': str(HTTP_201_CREATED),'id': str(new_ride_request.id)}
     return JsonResponse(dataresult, status=HTTP_201_CREATED)
 
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def ride(request, id):
+    if request.method == 'GET':
+        try:
+            dropoff_location = DropoffLocation.objects.get(pk=id)
+            data = {'name':str(dropoff_location.name), 'address': str(dropoff_location.address), 'city': str(dropoff_location.city), 'state': str(dropoff_location.state), 'zipcode': str(dropoff_location.zipcode), 'status': str(HTTP_200_OK)}
+            return JsonResponse(data, status=HTTP_200_OK)
+        except DropoffLocation.DoesNotExist:
+            data = {'message': 'Dropoff Location with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
+            return JsonResponse(data, status=HTTP_404_NOT_FOUND)
+    else:
+        data = json.loads(request.body.decode("utf-8"))
+        try:
+            dropoff_location = DropoffLocation.objects.get(pk=id)
+            if not data.get('name', "") == "":
+                dropoff_location.name = data['name']
+            if not data.get('address', "") == "":
+                dropoff_location.address = data['address']
+            if not data.get('city', "") == "":
+                dropoff_location.city = data['city']
+            if not data.get('state', "") == "":
+                dropoff_location.state = data['state']
+            if not data.get('zipcode', "") == "":
+                dropoff_location.zipcode = data['zipcode']
+            dropoff_location.save()
+            data = {'status': str(HTTP_204_NO_CONTENT)}
+            return JsonResponse(data, status=HTTP_204_NO_CONTENT)
+        except UserProfile.DoesNotExist:
+            data = {'message': 'Dropoff Location with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
+            return JsonResponse(data, status=HTTP_404_NOT_FOUND)
+
+@csrf_exempt
+@require_http_methods(["PUT"])
+def create_dropoff_location(request):
+    data = json.loads(request.body.decode("utf-8"))
+    new_dropoff_location = DropoffLocation.objects.create(name=data['name'], address=data['address'], city=data['city'], state=data['state'], zipcode=data['zipcode'])
+    new_dropoff_location.save()
+    dataresult = {'status': str(HTTP_201_CREATED),'id': str(new_dropoff_location.id)}
+    return JsonResponse(dataresult, status=HTTP_201_CREATED)
+
 
 # SERVICES  list
 # GET

@@ -13,10 +13,24 @@
 {% endblock %}
 
 {% block content %}
-  <h3 class="btn btn-lg btn-default">Create a New Ride</h3>
-  <br> <br> <br>
+  <form class="form-inline">
+    <!-- <div class="row"> -->
+      <!-- <div class="col-md-8"> -->
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Search for Rides"/>
+          <span class="input-group-btn">
+            <button type="submit" class="btn btn-primary"> Search </button>
+          </span>
+        </div>
+      <!-- </div> -->
+      <!-- <div class="col-md-4"> -->
+        <h3 class="btn btn-primary" style="margin-top: 0px;">Create a New Ride</h3>
+      <!-- </div> -->
+    <!-- </div> -->
+  </form>
+  <br> <br>
   <div class="panel panel-default" style="text-align: left">
-    <div class="panel-heading">Panel heading</div>
+    <div class="panel-heading" style="text-align: center;">Upcoming Rides</div>
       {% if rides %}
         {% for ride in rides %}
           <div class="panel-item"> {{ ride }} </div>

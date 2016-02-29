@@ -61,27 +61,13 @@ def rides(request):
 
     # if request.user.is_authenticated():
     #     return redirect('dashboard')
-    rides = [
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
-    {'driver': 'driverid2', 'available_seats': 4, 'from': 'nova1', 'to':'uva1', 'departure_time':'today'},
-    {'driver': 'driverid1', 'available_seats': 3, 'from': 'nova', 'to':'uva', 'departure_time':'today'},
+    driver_rides = [
+    {'date': 'Mar. 2 5PM', 'dropoff_number': 2, 'passenger_number': 3, 'available_seats': 2},
+    {'date': 'Mar. 5 5PM', 'dropoff_number': 1, 'passenger_number': 1, 'available_seats': 4},
+    ]
+    passenger_rides = [
+    {'driver': 'Jane Doe', 'date': 'Mar. 3 8PM', 'passenger_number': 3, 'dropoff_number': 2},
+    {'driver': 'Jane Doe', 'date': 'Mar. 12 3PM', 'passenger_number': 1, 'dropoff_number': 2},
     ]
     user = "John Doe"
-    return render(request, "rides.html", {"user":user, "authenticated":True, "rides": rides})
+    return render(request, "rides.html", {"user":user, "authenticated":True, "driver_rides": driver_rides, "passenger_rides": passenger_rides})
