@@ -4,8 +4,8 @@ import json
 from django.views.decorators.http import require_http_methods
 from accounts.status_codes import *
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
+# from django.contrib.auth.models import User
+# from django.contrib.auth import authenticate
 from accounts.models import UserProfile
 from ride.models import Ride
 from django.db.models import Q
@@ -25,7 +25,7 @@ def user(request, id):
         try:
             user = UserProfile.objects.get(pk=id)
             # rides = user.Ride_set.all()
-            data = {'rating': str(user.rating), 'school': user.school, 'last_name': user.user.last_name, 'first_name': user.user.first_name, 'email': user.user.email, 'number': user.phone, 'id': str(id), 'status': str(HTTP_200_OK)}
+            data = {'rating': str(user.rating), 'school': user.school, 'last_name': user.last_name, 'first_name': user.first_name, 'email': user.email, 'number': user.phone, 'id': str(id), 'status': str(HTTP_200_OK)}
             return JsonResponse(data, status=HTTP_200_OK)
         except UserProfile.DoesNotExist:
             data = {'message': 'user with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
@@ -35,21 +35,19 @@ def user(request, id):
         try:
             user = UserProfile.objects.get(pk=id)
             if not data.get('email', "") == "":
-                user.user.email = data['email']
-                user.user.username = data['email']
+                user.email = data['email']
             if not data.get('password', "") == "":
-                user.user.password = data['password']
+                user.password = data['password']
             if not data.get('first_name', "") == "":
-                user.user.first_name = data['first_name']
+                user.first_name = data['first_name']
             if not data.get('last_name', "") == "":
-                user.user.last_name = data['last_name']
+                user.last_name = data['last_name']
             if not data.get('phone', "") == "":
                 user.phone = data['phone']
             if not data.get('school', "") == "":
                 user.school = data['school']
             if not data.get('rating', "") == "":
                 user.rating = data['rating']
-            user.user.save()
             user.save()
             data = {'status': str(HTTP_204_NO_CONTENT)}
             return JsonResponse(data, status=HTTP_204_NO_CONTENT)
@@ -64,8 +62,9 @@ def authenticate_user(request):
     POST http://models:8000/api/v1/accounts/user/authenticate/
     """
     data = json.loads(request.body.decode("utf-8"))
-    user = authenticate(username='john', password='secret')
-    if user is not None and user.is_active:
+    # user = authenticate(username='john', password='secret')
+    user = UserProfile.objects.get(data['user+id'])
+    if user is not None:
         # the password verified for the user AND the account has not been disabled
         return JsonResponse({'message': 'User authenticated'}, status=HTTP_202_ACCEPTED)
     else:
