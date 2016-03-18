@@ -11,6 +11,9 @@ from accounts.models import UserProfile
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def ride(request, id):
+    """
+    GET,POST http://models:8000/api/v1/ride/ride/<id>/
+    """
     if request.method == 'GET':
         try:
             ride = Ride.objects.get(pk=id)
@@ -46,7 +49,7 @@ def ride(request, id):
 @require_http_methods(["PUT"])
 def create_ride(request):
     """
-    PUT http://models:8000/api/v1/ride/ride
+    PUT http://models:8000/api/v1/ride/ride/
     """
     data = json.loads(request.body.decode("utf-8"))
     # driver = UserProfile.objects.get(user=request.user)
@@ -59,6 +62,9 @@ def create_ride(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def delete_ride(request, id):
+    """
+    POST http://models:8000/api/v1/ride/ride/delete/<id>/
+    """
     try:
         ride = Ride.objects.get(pk=id)
         ride.delete()
@@ -71,6 +77,9 @@ def delete_ride(request, id):
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def ride_request(request, id):
+    """
+    GET,POST http://models:8000/api/v1/ride/rideRequest/<id>/
+    """
     if request.method == 'GET':
         try:
             riderequest = RideRequest.objects.get(pk=id)
@@ -86,6 +95,9 @@ def ride_request(request, id):
 @csrf_exempt
 @require_http_methods(["PUT"])
 def create_ride_request(request):
+    """
+    PUT http://models:8000/api/v1/ride/rideRequest/
+    """
     data = json.loads(request.body.decode("utf-8"))
     ride = Ride.objects.get(pk=data['ride_id'])
     passenger = UserProfile.objects.get(pk=data['passenger_id'])

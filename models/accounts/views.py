@@ -12,14 +12,15 @@ from django.db.models import Q
 from datetime import datetime
 from django.utils import formats
 
-def home(request):
-    html = "<html><head><title>Welcome to Rideshare!</title></head><body><h1>Welcome to Rideshare!</h1></body></html>"
-    return HttpResponse(html)
+
 
 # GET or UPDATE user
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def user(request, id):
+    """
+    GET,POST http://models:8000/api/v1/accounts/user/<user_id>/
+    """
     if request.method == 'GET':
         try:
             user = UserProfile.objects.get(pk=id)
@@ -59,6 +60,9 @@ def user(request, id):
 @csrf_exempt
 @require_http_methods(["POST"])
 def authenticate_user(request):
+    """
+    POST http://models:8000/api/v1/accounts/user/authenticate/
+    """
     data = json.loads(request.body.decode("utf-8"))
     user = authenticate(username='john', password='secret')
     if user is not None and user.is_active:
@@ -84,6 +88,9 @@ def create_user(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def delete_user(request, id):
+    """
+    POST http://localhost:8000/api/v1/accounts/delete/<user_id>/
+    """
     try:
         user = UserProfile.objects.get(pk=id)
         user.delete()
@@ -97,6 +104,9 @@ def delete_user(request, id):
 @csrf_exempt
 @require_http_methods(["GET"])
 def user_rides(request, id):
+    """
+    GET http://localhost:8000/api/v1/accounts/user/<user_id>/rides/
+    """
     if request.method == 'GET':
         try:
             # user = UserProfile.objects.get(pk=id)
