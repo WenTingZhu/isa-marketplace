@@ -20,15 +20,15 @@
   <form class="form-inline">
     <!-- <div class="row"> -->
       <!-- <div class="col-md-8"> -->
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="Search for Rides"/>
-          <span class="input-group-btn">
-            <button type="submit" class="btn btn-primary"> Search </button>
-          </span>
-        </div>
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Search for Rides" style="height: 46px; width: 600px;"/>
+        <span class="input-group-btn">
+          <button type="submit" class="btn btn-primary btn-lg"> Search </button>
+        </span>
+      </div>
       <!-- </div> -->
       <!-- <div class="col-md-4"> -->
-        <h3 class="btn btn-primary" style="margin-top: 0px;">Create a New Ride</h3>
+        <a href="{%url 'create_ride'%}"><h3 class="btn btn-primary" style="margin-top: 0px;">Create a New Ride</h3></a>
       <!-- </div> -->
     <!-- </div> -->
   </form>

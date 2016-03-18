@@ -103,8 +103,29 @@ def rides(request):
 
 @csrf_protect
 @never_cache
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "POST"])
 def create_ride(request):
-
-
-    return render(request, "create_ride.html", {'authenticated': True, })
+    user = "John Doe"
+    if request.method == "POST":
+        context = {'user': user, "authenticated": True}
+        driver = 1
+        open_seats = request.POST['open_seats']
+        departure = request.POST['departure']
+        data = {'driver': driver, 'open_seats': open_seats, 'departure': departure}
+        url = experience + "create_ride/"
+        response = requests.post(url)
+        if response.status_code == HTTP_201_CREATED:
+            data = response.json()
+            ride_id = data["ride_id"]
+            available_seats = data["open_seats"]
+            departure = data["departure"]
+            ride_status = 1
+            driver = "John Doe"
+            details = {"ride_id": ride_id, "available_seats": available_seats, "departure": departure, "ride_status": ride_status, "driver": driver}
+            context["details"] = details
+            context["data"] = json.loads(data)
+            return redirect()
+        else:
+            context["data"] = "FAILED"
+            return redirect()
+    return render(request, "create_ride.html", context)

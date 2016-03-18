@@ -1,70 +1,79 @@
-<!DOCTYPE html>
-{% load staticfiles %}
+<!DOCTYPE html> {% load staticfiles %}
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title> {% block title %}{% endblock %} </title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    {% block extrastyle %}{% endblock %}
-  </head>
-  <body style="text-align: center">
-    {% block navbar %}
-      <nav class="navbar navbar-default">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span clas="icon-bar"></span>
-            <span clas="icon-bar"></span>
-            <span clas="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="{% url 'index'%}">RideShare</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse" aria-expanded="true">
-          <ul class="nav navbar-nav navbar-right" style="padding-right: 15px;">
-            {% block navbar_content %}
-            <!-- Default content -->
-            <li>
-              <a href="">About</a>
-            </li>
-            {% if authenticated %}
-            <li class="dropdown {% if invalid_login %} open {% endif %}">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">John Doe</a>
-              <ul class="dropdown-menu">
-                <li><a href="">Profile</a></li>
-                <li><a href="{% url 'rides' %}">Rides</a></li>
-                <li><a href="">Log Out</a></li>
-              </ul>
-            </li>
-            {% else %}
-            <li class="dropdown {% if invalid_login %} open {% endif %}">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" {% if invalid_login %}aria-expanded="true"{% endif %}>Log In</a>
-              <div class="dropdown-menu">
-                <form class="form" method="POST" action="{% url 'login' %}" id="login-form">
-                  {% csrf_token %}
-                  <input class="form-control" name="username" id="username" type="text" placeholder="Email" autofocus required>
-                  <input class="form-control" name="password" id="password" type="password" placeholder="Password" required><br>
-                  {% if invalid_login %}<p class="errorMessage"> Login Failed. Try again. </p>{% endif %}
-                  <button type="submit" id="login-btn" class="btn btn-secondary round-corners">Login</button>
-                </form>
-              </div>
-            </li>
-            {% endif %}
-            {% endblock %}
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title> {% block title %}{% endblock %} </title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> {% block extrastyle %}{% endblock %}
+</head>
+
+<body style="text-align: center">
+  {% block navbar %}
+  <nav class="navbar navbar-default">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span clas="icon-bar"></span>
+        <span clas="icon-bar"></span>
+        <span clas="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="{% url 'index'%}">RideShare</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse" aria-expanded="true">
+      <ul class="nav navbar-nav navbar-right" style="padding-right: 15px;">
+        {% block navbar_content %}
+        <!-- Default content -->
+        <li>
+          <a href="">About</a>
+        </li>
+        {% if authenticated %}
+        <li class="dropdown {% if invalid_login %} open {% endif %}">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">John Doe</a>
+          <ul class="dropdown-menu">
+            <li><a href="">Profile</a></li>
+            <li><a href="{% url 'rides' %}">Rides</a></li>
+            <li><a href="">Log Out</a></li>
           </ul>
-        </div>
-      </nav>
-      <div class="container">
-        <div class="jumbotron">
-          {% block heading_content %}{% endblock %}
-        </div>
-        {% block content %}{% endblock %}
-      </div>
-    {% endblock %}
-    {% block footer %}{% endblock %}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    {% block extrascript %} {% endblock %}
-  </body>
+        </li>
+        {% else %}
+        <li class="dropdown {% if invalid_login %} open {% endif %}">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" {% if invalid_login %}aria-expanded="true" {% endif %}>Log In</a>
+          <div class="dropdown-menu" style="width: 400px; padding: 15px;">
+            <form role="form" method="POST" action="{% url 'login' %}" id="login-form">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="username">Email:</label>
+                <input class="form-control" name="username" id="username" type="text" placeholder="Email" autofocus required>
+              </div>
+              <div class="form-group">
+                <label for="password">Password:</label>
+                <input class="form-control" name="password" id="password" type="password" placeholder="Password" required>
+              </div>
+              {% if invalid_login %}
+                <p class="errorMessage"> Login Failed. Try again. </p>
+              {% endif %}
+              <div style="text-align: center;">
+                <button type="submit" id="login-btn" class="btn btn-primary">Login</button>
+              </a>
+            </form>
+          </div>
+        </li>
+        {% endif %} {% endblock %}
+      </ul>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="jumbotron">
+      {% block heading_content %}{% endblock %}
+    </div>
+    {% block content %}{% endblock %}
+  </div>
+  {% endblock %} {% block footer %}{% endblock %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  {% block extrascript %} {% endblock %}
+</body>
+
 </html>
