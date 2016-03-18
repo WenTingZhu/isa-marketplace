@@ -45,6 +45,23 @@ def user_rides(requst, id):
         return JsonResponse({'message': 'Ride not found'}, status=HTTP_401_UNAUTHORIZED)
 
 
+@csrf_exempt
+@require_http_methods(["PUT"])
+def create_ride(request):
+    """
+    PUT http://experience:8001/create_ride/
+    """
+    data = json.loads(request.body.decode("utf-8"))
+    # curl -H "Content-Type: application/json" -X PUT -d '{"driver":"1","open_seats":3, "departure": "2016-01-20 05:30"}' http://localhost:8000/api/v1/ride/ride/
+    url = "http://models:8000/" + "api/v1/ride/ride/"
+    resp = requests.put(url, data={"driver":data['driver'],"open_seats":data['open_seats'], "departure": data['departure']})
+
+    new_ride = resp.json()['data']
+    if resp.status_code == HTTP_201_CREATED:
+        return JsonResponse({'message': 'Ride Created', 'status': str(HTTP_201_CREATED), 'ride_id': new_ride['ride_id'], 'open_seats': new_ride['open_seats'], 'departure': new_ride['departure']}}, status=HTTP_201_CREATED)
+    else:
+        return JsonResponse({'message': 'Ride not found'}, status=HTTP_401_UNAUTHORIZED)
+
 
 # def create_ride(driver_id, open_seats, departure_time, ride_status):
 #     resp = requests.get()

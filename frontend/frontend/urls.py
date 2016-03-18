@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^ride_detail/(\d+)/', 'frontend.views.ride_detail', name="ride_detail"),
     url(r'^login/', 'frontend.views.login', name="login"),
     url(r'^dashboard/', 'frontend.views.dashboard', name="dashboard"),
+    url(r'^create_ride/', 'frontend.views.create_ride', name="create_ride"),
 ]

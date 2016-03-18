@@ -99,3 +99,12 @@ def rides(request):
     # {'driver': 'Jane Doe', 'date': 'Mar. 3 8PM', 'passenger_number': 3, 'dropoff_number': 2},
     # {'driver': 'Jane Doe', 'date': 'Mar. 12 3PM', 'passenger_number': 1, 'dropoff_number': 2},
     # ]"
+
+
+@csrf_protect
+@never_cache
+@require_http_methods(["GET"])
+def create_ride(request):
+
+
+    return render(request, "create_ride.html", {'authenticated': True, })
