@@ -14,6 +14,9 @@ from django.conf import settings
 experience = "http://" + settings.EXPERIENCE + ":8000/"
 
 def index(request):
+    """
+    
+    """
     invalid_login = request.session.pop('invalid_login', False)
 
     if request.user.is_authenticated():
