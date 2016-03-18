@@ -56,8 +56,8 @@ def create_ride(request):
     driver = UserProfile.objects.get(pk=data['driver'])
     new_ride = Ride(driver=driver, openSeats=data['open_seats'], departure=data['departure'], status=0)
     new_ride.save()
-    dataresult = {'status': str(HTTP_201_CREATED),'id': str(new_ride.id), 'open_seats': new_ride.openSeats, 'departure': new_ride.departure}
-    return JsonResponse(dataresult, status=HTTP_201_CREATED)
+    data = {'status': str(HTTP_201_CREATED),'id': str(new_ride.id), 'open_seats': new_ride.openSeats, 'departure': new_ride.departure}
+    return JsonResponse(data, status=HTTP_201_CREATED)
 
 @csrf_exempt
 @require_http_methods(["POST"])

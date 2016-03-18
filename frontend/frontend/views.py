@@ -15,7 +15,7 @@ experience = "http://" + settings.EXPERIENCE + ":8000/"
 
 def index(request):
     """
-    
+
     """
     invalid_login = request.session.pop('invalid_login', False)
 
@@ -109,26 +109,26 @@ def rides(request):
 @require_http_methods(["GET", "POST"])
 def create_ride(request):
     user = "John Doe"
+    context = {'user': user, "authenticated": True}
     if request.method == "POST":
-        context = {'user': user, "authenticated": True}
         driver = 1
         open_seats = request.POST['open_seats']
         departure = request.POST['departure']
         data = {'driver': driver, 'open_seats': open_seats, 'departure': departure}
         url = experience + "create_ride/"
-        response = requests.post(url)
+        response = requests.put(url, json=data)
         if response.status_code == HTTP_201_CREATED:
             data = response.json()
-            ride_id = data["ride_id"]
-            available_seats = data["open_seats"]
+            ride_id = data['ride_id']
+            available_seats = data['open_seats']
             departure = data["departure"]
             ride_status = 1
             driver = "John Doe"
             details = {"ride_id": ride_id, "available_seats": available_seats, "departure": departure, "ride_status": ride_status, "driver": driver}
-            context["details"] = details
-            context["data"] = json.loads(data)
-            return redirect()
+            context['details'] = details
+            context['data'] = data
+            return redirect("ride_detail", int(ride_id))
         else:
-            context["data"] = "FAILED"
-            return redirect()
+            context['data'] = "FAILED"
+            return redirect("dashboard")
     return render(request, "create_ride.html", context)
