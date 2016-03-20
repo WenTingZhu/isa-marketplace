@@ -43,14 +43,15 @@
           <div class="dropdown-menu" style="width: 400px; padding: 15px;">
             <form role="form" method="POST" action="{% url 'login' %}" id="login-form">
               {% csrf_token %}
-              <div class="form-group">
+              {{ login_form }}
+              <!-- <div class="form-group">
                 <label for="username">Email:</label>
                 <input class="form-control" name="username" id="username" type="text" placeholder="Email" autofocus required>
               </div>
               <div class="form-group">
                 <label for="password">Password:</label>
                 <input class="form-control" name="password" id="password" type="password" placeholder="Password" required>
-              </div>
+              </div> -->
               {% if invalid_login %}
                 <p class="errorMessage"> Login Failed. Try again. </p>
               {% endif %}

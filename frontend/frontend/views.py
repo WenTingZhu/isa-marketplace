@@ -16,7 +16,7 @@ experience = "http://" + settings.EXPERIENCE + ":8000/"
 
 def index(request):
     """
-
+    GET http://frontend:8002/
     """
     invalid_login = request.session.pop('invalid_login', False)
 
@@ -24,40 +24,57 @@ def index(request):
         return redirect('dashboard')
 
     signup_form = SignupForm()
+    login_form = LoginForm()
 
-    return render(request, "index.html", {"invalid_login": invalid_login, "authenticated": False, "signup_form":signup_form})
+    return render(request, "index.html", {
+        "invalid_login": invalid_login,
+        "authenticated": False,
+        "signup_form":signup_form,
+        "login_form": login_form
+        })
 
 @sensitive_post_parameters()
 @csrf_protect
 @never_cache
 @require_http_methods(["POST"])
 def create_user(request):
+    """
+    POST http://frontend:8002/create_user/
+    """
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
-            return redirect('dashboard')
+            return redirect('index')
 
 @sensitive_post_parameters()
 @csrf_protect
 @never_cache
 @require_http_methods(["POST"])
 def login(request):
+    """
+    POST http://frontend:8002/login/
+    """
     if request.method == "POST":
-        username = request.POST['username']
-        password = request.POST['password']
-        data = {'username': username, 'password': password}
-        url = experience + "autheticate_user/"
-        # Send request to experience and get response
-        # response = requests.post(url, data=json.dumps(data).encode('utf8'), headers={'content-type': 'application/json'})
-        response = 202
-        if response == 202:
-            return redirect('dashboard')
-        else:
-            request.session['invalid_login'] = True
-            return redirect('index')
+        form = LoginForm()
+        if form.is_valid():
+            # process data from form.cleaned_data
+            # username = request.POST['username']
+            # password = request.POST['password']
+
+            data = {'username': username, 'password': password}
+            url = experience + "autheticate_user/"
+            # Send request to experience and get response
+            # response = requests.post(url, data=json.dumps(data).encode('utf8'), headers={'content-type': 'application/json'})
+
+            response = 202
+            if response == 202:
+                return redirect('dashboard')
+            else:
+                request.session['invalid_login'] = True
+                return redirect('index')
     return redirect('index')
 
 
