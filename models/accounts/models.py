@@ -20,5 +20,4 @@ class UserProfile(models.Model):
 
 
 class UserAuthenticator(models.Model):
-	user = models.OneToOneField(User)
-	
+	user = models.OneToOneField(UserProfile)

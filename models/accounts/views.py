@@ -101,11 +101,9 @@ def create_user(request):
     PUT http://localhost:8000/api/v1/accounts/user/
     """
     data = json.loads(request.body.decode("utf-8"))
-    new_user = User.objects.create_user(username=data['email'], email=data['email'], password=data['password'], first_name=data['first_name'], last_name=data['last_name'])
-    new_user_profile = UserProfile(user=new_user, phone=data['phone'], school=data['school'], rating=0)
+    new_user = UserProfile(email=data['email'], password=data['password'], first_name=data['first_name'], last_name=data['last_name'], phone=data['phone'], school=['school'], rating=0)
     new_user.save()
-    new_user_profile.save()
-    dataresult = {'status': str(HTTP_201_CREATED),'id': str(new_user_profile.id), 'email': new_user_profile.user.email, 'first_name': new_user_profile.user.first_name, 'last_name': new_user_profile.user.last_name, 'phone': new_user_profile.phone, 'school': new_user_profile.school, 'rating': str(new_user_profile.rating)}
+    dataresult = {'status': str(HTTP_201_CREATED),'user_id': str(new_user.id), 'email': new_user.user.email, 'first_name': new_user.user.first_name, 'last_name': new_user.user.last_name, 'phone': new_user.phone, 'school': new_user.school, 'rating': str(new_user.rating)}
     return JsonResponse(dataresult, status=HTTP_201_CREATED)
 
 @csrf_exempt

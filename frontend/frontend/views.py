@@ -43,11 +43,25 @@ def create_user(request):
     """
     if request.method == 'POST':
         form = SignupForm(request.POST)
+
         if form.is_valid():
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
-            return redirect('index')
+            url = 'http://experience:8001/create_account/'
+            data={
+                'email':form.cleaned_data['email'],
+                'password':form.cleaned_data['password'],
+                'first_name':form.cleaned_data['first_name'],
+                'last_name':form.cleaned_data['last_name'],
+                'phone':form.cleaned_data['phone'],
+                'school':form.cleaned_data['school']
+            }
+
+            resp = requests.put(url, json=data)
+            if resp.status_code==HTTP_201_CREATED:
+                return redirect('dashboard')
+    return redirect('index')
 
 @sensitive_post_parameters()
 @csrf_protect
