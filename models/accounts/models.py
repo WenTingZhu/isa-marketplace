@@ -17,3 +17,8 @@ class UserProfile(models.Model):
 
 	def __str__(self):
 		return self.email
+
+
+class UserAuthenticator(models.Model):
+	user = models.OneToOneField(User)
+	

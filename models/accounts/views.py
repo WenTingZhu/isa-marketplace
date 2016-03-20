@@ -11,8 +11,12 @@ from ride.models import Ride
 from django.db.models import Q
 from datetime import datetime
 from django.utils import formats
-
-
+import django.contrib.auth.hashers
+import exp_srvc_errors  # where I put some error codes the exp srvc can return
+import os, hmac
+# import django settings file
+import settings
+from django.contrib.auth.hashers import check_password
 
 # GET or UPDATE user
 @csrf_exempt
@@ -55,6 +59,22 @@ def user(request, id):
             data = {'message': 'user with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
 
+ def authenticate(self, email, password):
+        pwd_valid = check_password(password, settings.ADMIN_PASSWORD)
+        if login_valid and pwd_valid:
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                # Create a new user. Note that we can set password
+                # to anything, because it won't be checked; the password
+                # from settings.py will.
+                user = User(username=username, password='get from settings.py')
+                user.is_staff = True
+                user.is_superuser = True
+                user.save()
+            return user
+        return None
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def authenticate_user(request):
@@ -63,6 +83,10 @@ def authenticate_user(request):
     """
     data = json.loads(request.body.decode("utf-8"))
     # user = authenticate(username='john', password='secret')
+    email = data['email']
+    password = data['password']
+
+    authenticator = hmac.new (key = settings.SECRET_KEY.encode('utf-8'), msg = os.urandom(32), digestmod = 'sha256').hexdigest()
     user = UserProfile.objects.get(data['user+id'])
     if user is not None:
         # the password verified for the user AND the account has not been disabled

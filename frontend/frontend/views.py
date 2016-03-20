@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from frontend.status_codes import *
 import requests
 from django.conf import settings
+from .forms import *
 
 experience = "http://" + settings.EXPERIENCE + ":8000/"
 
@@ -22,7 +23,22 @@ def index(request):
     if request.user.is_authenticated():
         return redirect('dashboard')
 
-    return render(request, "index.html", {"invalid_login": invalid_login, "authenticated": False})
+    signup_form = SignupForm()
+
+    return render(request, "index.html", {"invalid_login": invalid_login, "authenticated": False, "signup_form":signup_form})
+
+@sensitive_post_parameters()
+@csrf_protect
+@never_cache
+@require_http_methods(["POST"])
+def create_user(request):
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+            return redirect('dashboard')
 
 @sensitive_post_parameters()
 @csrf_protect
@@ -43,6 +59,9 @@ def login(request):
             request.session['invalid_login'] = True
             return redirect('index')
     return redirect('index')
+
+
+
 
 # @login_required(login_url='/login')
 def dashboard(request):
