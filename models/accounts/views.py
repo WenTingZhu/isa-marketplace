@@ -12,10 +12,10 @@ from django.db.models import Q
 from datetime import datetime
 from django.utils import formats
 import django.contrib.auth.hashers
-import exp_srvc_errors  # where I put some error codes the exp srvc can return
+# import exp_srvc_errors  # where I put some error codes the exp srvc can return
 import os, hmac
 # import django settings file
-import settings
+from rideshare import settings
 from django.contrib.auth.hashers import check_password
 
 # GET or UPDATE user
@@ -59,21 +59,21 @@ def user(request, id):
             data = {'message': 'user with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
 
- def authenticate(self, email, password):
-        pwd_valid = check_password(password, settings.ADMIN_PASSWORD)
-        if login_valid and pwd_valid:
-            try:
-                user = User.objects.get(username=username)
-            except User.DoesNotExist:
-                # Create a new user. Note that we can set password
-                # to anything, because it won't be checked; the password
-                # from settings.py will.
-                user = User(username=username, password='get from settings.py')
-                user.is_staff = True
-                user.is_superuser = True
-                user.save()
-            return user
-        return None
+def authenticate(self, email, password):
+    pwd_valid = check_password(password, settings.ADMIN_PASSWORD)
+    if login_valid and pwd_valid:
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            # Create a new user. Note that we can set password
+            # to anything, because it won't be checked; the password
+            # from settings.py will.
+            user = User(username=username, password='get from settings.py')
+            user.is_staff = True
+            user.is_superuser = True
+            user.save()
+        return user
+    return None
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -139,7 +139,7 @@ def user_rides(request, id):
                 driver_ride["id"] = ride.pk
                 driver_ride["driver"] = str(ride.driver)
                 driver_ride["available_seats"] = str(ride.openSeats)
-                driver_ride["departure"] = str("{:%b %d, %Y %H:%M:%S}".format(ride.departure))
+                driver_ride["departure"] = str("{:%b %d, %Y %H:%M}".format(ride.departure))
                 driver_ride["status"] = str(ride.status)
                 driver_rides.append(driver_ride)
 

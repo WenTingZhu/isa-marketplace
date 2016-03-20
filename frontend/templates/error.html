@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %} Rideshare - Oops {% endblock %}
+{% block extrastyle %}
+  {% load staticfiles %}
+  <link rel="stylesheet" type="text/css" href="{% static " frontend/css/style.css " %}">
+  <style type="text/css">
+    .panel-body {
+      text-align: center;
+    }
+  </style>
+{% endblock %}
+{% block heading_content %}
+  <h2> Whatever you just tried went completely wrong! Go back to the <a href="{% url 'index' %}"> homepage </a>. </h2>
+{% endblock %}
+
+{% block content %}
+  <div class="panel panel-default" style="text-align: left">
+    <div class="panel-heading" style="text-align: center;"><h2>Error Message</h2></div>
+    <div class="panel-body">
+      <h3> {{ message }} </h3>
+      <p> {{ message_details }} </p>
+    <div>
+  </div>
+{% endblock %}

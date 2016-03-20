@@ -4,35 +4,23 @@
 {% block extrastyle %}
       {% load staticfiles %}
       <link rel="stylesheet" type="text/css" href="{% static "frontend/css/style.css" %}">
+      <style type="text/css">
+        .row {
+          margin: 0px;
+          padding: 0px;
+        }
+      </style>
 {% endblock %}
 
 {% block heading_content %}
-  <h1>
+  <h2>
     Welcome back, John Doe!
-  </h1>
+  </h2>
 {% endblock %}
 
 {% block content %}
-  <form class="form-inline">
-    <!-- <div class="row"> -->
-      <!-- <div class="col-md-8"> -->
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="Search for Rides" style="height: 46px; width: 600px;"/>
-          <span class="input-group-btn">
-            <button type="submit" class="btn btn-primary btn-lg"> Search </button>
-          </span>
-        </div>
-      <!-- </div> -->
-      <!-- <div class="col-md-4"> -->
-        <a href="{%url 'create_ride'%}"><h3 class="btn btn-primary btn-lg" style="margin-top: 0px;">Create a New Ride</h3></a>
-      <!-- </div> -->
-    <!-- </div> -->
-  </form>
-  <br> <br>
-  <div class="panel panel-default" style="text-align: left">
-    <div class="panel-heading" style="text-align: center;">Upcoming Rides</div>
-    <div class="panel-body">{{data}}
-      <!-- <h1> {{ data }} </h1> -->
-    <div>
+  <div class="btn-group">
+    <a href="{% url 'rides' %}" class="btn btn-default"> View My Rides </a>
+    <a href="{% url 'create_ride' %}"class="btn btn-primary"> Create a New Ride </a>
   </div>
 {% endblock %}

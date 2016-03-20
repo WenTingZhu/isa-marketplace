@@ -9,7 +9,7 @@ from connector.status_codes import *
 @csrf_exempt
 @require_http_methods(["GET"])
 def home():
-    return  JsonResponse({}, status=HTTP_200_OK)
+    return JsonResponse({}, status=HTTP_200_OK)
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -59,7 +59,8 @@ def create_ride(request):
         new_ride = resp.json()
         return JsonResponse({'message': 'Ride Created', 'ride_id': new_ride['id'], 'open_seats': new_ride['open_seats'], 'departure': new_ride['departure']}, status=HTTP_201_CREATED)
     else:
-        return JsonResponse({'message': 'Ride not found'}, status=HTTP_401_UNAUTHORIZED)
+        message = resp.text
+        return JsonResponse({'message': message}, status=HTTP_401_UNAUTHORIZED)
 
 
 @csrf_exempt
@@ -84,12 +85,12 @@ def create_account(request):
     # curl -H "Content-Type: application/json" -X PUT -d '{"driver":"1","open_seats":3, "departure": "2016-01-20 05:30"}' http://localhost:8000/api/v1/ride/ride/
     url = "http://models:8000/" + "api/v1/accounts/user/"
     resp = requests.put(url, json={
-        'email'=data['email'],
-        'password'=data['password'],
-        'first_name'=data['first_name'],
-        'last_name'=data['last_name'],
-        'phone'=data['phone'],
-        'school'=data['school']
+        'email':data['email'],
+        'password':data['password'],
+        'first_name':data['first_name'],
+        'last_name':data['last_name'],
+        'phone':data['phone'],
+        'school':data['school']
     })
     if resp.status_code == HTTP_201_CREATED:
         new_user = resp.json()
