@@ -13,6 +13,7 @@ from .forms import *
 
 experience = "http://" + settings.EXPERIENCE + ":8000/"
 
+
 def index(request):
     """
     GET http://frontend:8000/
@@ -28,9 +29,10 @@ def index(request):
     return render(request, "index.html", {
         "invalid_login": invalid_login,
         "authenticated": False,
-        "signup_form":signup_form,
+        "signup_form": signup_form,
         "login_form": login_form
-        })
+    })
+
 
 @sensitive_post_parameters()
 @csrf_protect
@@ -48,21 +50,22 @@ def create_user(request):
             # ...
             # redirect to a new URL:
             url = 'http://experience:8000/create_account/'
-            data={
-                'email':form.cleaned_data['email'],
-                'password':form.cleaned_data['password'],
-                'first_name':form.cleaned_data['first_name'],
-                'last_name':form.cleaned_data['last_name'],
-                'phone':form.cleaned_data['phone'],
-                'school':form.cleaned_data['school']
+            data = {
+                'email': form.cleaned_data['email'],
+                'password': form.cleaned_data['password'],
+                'first_name': form.cleaned_data['first_name'],
+                'last_name': form.cleaned_data['last_name'],
+                'phone': form.cleaned_data['phone'],
+                'school': form.cleaned_data['school']
             }
 
             resp = requests.put(url, json=data)
-            if resp.status_code==HTTP_201_CREATED:
+            if resp.status_code == HTTP_201_CREATED:
                 return redirect('dashboard')
             else:
                 return HttpResponse(resp.content)
     return HttpResponse('failed')
+
 
 @sensitive_post_parameters()
 @csrf_protect
@@ -82,8 +85,9 @@ def login(request):
             data = {'email': email, 'password': password}
             url = experience + "authenticate_user/"
             # Send request to experience and get response
-            response = requests.post(url, data=json.dumps(data).encode('utf8'), headers={'content-type': 'application/json'})
-
+            response = requests.post(url,
+                                     data=json.dumps(data).encode('utf8'),
+                                     headers={'content-type': 'application/json'})
 
             if response.status_code == HTTP_202_ACCEPTED:
                 return HttpResponse(response.content)
@@ -116,6 +120,7 @@ def dashboard(request):
     #     rides.append(response
     return render(request, "dashboard.html", context)
 
+
 def ride_detail(request, id):
     user = "John Doe"
     context = {'user': user, "authenticated": True}
@@ -130,14 +135,13 @@ def ride_detail(request, id):
         context["data"] = "FAILED"
     return render(request, "ride-details.html", context)
 
+
 def rides(request):
     # invalid_login = request.session.pop('invalid_login', False)
 
-    # if request.user.is_authenticated():
-    #     return redirect('dashboard')
     user = "John Doe"
     authenticated = True
-    # ontext = {"user":user, "authenticated":True, "driver_rides": [], "passenger_rides": []]}
+
     url = experience + "user_rides/1/"
     response = requests.get(url)
     if response.status_code == HTTP_200_OK:
@@ -146,17 +150,15 @@ def rides(request):
         driver_rides = json.loads(data["driver_rides"])
         passenger_rides = json.loads(data["passenger_rides"])
 
-        return render(request, "rides.html", {'user': user, 'authenticated': authenticated, "data": data, "driver_rides": driver_rides, "passenger_rides": passenger_rides})
+        return render(request, "rides.html", {
+            'user': user,
+            'authenticated': authenticated,
+            "data": data,
+            "driver_rides": driver_rides,
+            "passenger_rides": passenger_rides
+        })
     else:
         return render(request, "rides.html", {'user': user, 'authenticated': authenticated, 'data': "FAILED"})
-    # driver_rides = [
-    # {'date': 'Mar. 2 5PM', 'dropoff_number': 2, 'passenger_number': 3, 'available_seats': 2},
-    # {'date': 'Mar. 5 5PM', 'dropoff_number': 1, 'passenger_number': 1, 'available_seats': 4},
-    # ]
-    # passenger_rides = [
-    # {'driver': 'Jane Doe', 'date': 'Mar. 3 8PM', 'passenger_number': 3, 'dropoff_number': 2},
-    # {'driver': 'Jane Doe', 'date': 'Mar. 12 3PM', 'passenger_number': 1, 'dropoff_number': 2},
-    # ]"
 
 
 @csrf_protect
@@ -172,7 +174,8 @@ def create_ride(request):
             driver = 1
             open_seats = data['open_seats']
             departure = str(data['departure'])
-            values = {'driver': driver, 'open_seats': open_seats, 'departure': departure}
+            values = {'driver': driver, 'open_seats':
+                      open_seats, 'departure': departure}
             url = experience + "create_ride/"
             response = requests.put(url, json=values)
             if response.status_code == HTTP_201_CREATED:
@@ -182,7 +185,9 @@ def create_ride(request):
                 departure = data["departure"]
                 ride_status = 1
                 driver = "John Doe"
-                details = {"ride_id": ride_id, "available_seats": available_seats, "departure": departure, "ride_status": ride_status, "driver": driver}
+                details = {
+                    "ride_id": ride_id, "available_seats": available_seats,
+                    "departure": departure, "ride_status": ride_status, "driver": driver}
                 context['details'] = details
                 context['data'] = data
                 return redirect("ride_detail", int(ride_id))
@@ -192,7 +197,8 @@ def create_ride(request):
                 return render(request, "error.html", context)
         else:
             context['message'] = "Invalid Form Submission"
-            context['message_details'] = "Open Seats: " + request.POST['open_seats'] + "\n" + "Departure: " + request.POST['departure']
+            context['message_details'] = "Open Seats: " + request.POST[
+                'open_seats'] + "\n" + "Departure: " + request.POST['departure']
             return render(request, "error.html", context)
     create_ride_form = CreateRideForm()
     context['create_ride_form'] = create_ride_form
