@@ -115,12 +115,26 @@ def create_user(request):
     PUT http://localhost:8000/api/v1/accounts/user/
     """
     data = json.loads(request.body.decode("utf-8"))
-    new_user = UserProfile(email=data['email'], password=data['password'], first_name=data[
-                           'first_name'], last_name=data['last_name'], phone=data['phone'], school=data['school'], rating=0)
+    new_user = UserProfile(
+        email=data['email'],
+        password=data['password'],
+        first_name=data['first_name'],
+        last_name=data['last_name'],
+        phone=data['phone'],
+        school=data['school'],
+        rating=0
+    )
     new_user.save()
     dataresult = {
-        'status': str(HTTP_201_CREATED), 'user_id': str(new_user.id), 'email': new_user.email, 'first_name': new_user.first_name,
-                                'last_name': new_user.last_name, 'phone': new_user.phone, 'school': new_user.school, 'rating': str(new_user.rating)}
+        'status': str(HTTP_201_CREATED),
+        'user_id': str(new_user.id),
+        'email': new_user.email,
+        'first_name': new_user.first_name,
+        'last_name': new_user.last_name,
+        'phone': new_user.phone,
+        'school': new_user.school,
+        'rating': str(new_user.rating)
+    }
     return JsonResponse(dataresult, status=HTTP_201_CREATED)
 
 
@@ -174,8 +188,11 @@ def user_rides(request, id):
                     "{:%b %d, %Y}".format(ride.departure))
                 passenger_ride["status"] = str(ride.status)
                 passenger_rides.append(passenger_ride)
-            data = {'driver_rides': json.dumps(driver_rides), 'passenger_rides': json.dumps(
-                passenger_rides), 'status': str(HTTP_200_OK)}
+            data = {
+                'driver_rides': json.dumps(driver_rides),
+                'passenger_rides': json.dumps(passenger_rides),
+                'status': str(HTTP_200_OK)
+            }
             return JsonResponse(data, status=HTTP_200_OK)
         except UserProfile.DoesNotExist:
             data = {'message': 'user with id ' + id +

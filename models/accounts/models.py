@@ -10,7 +10,7 @@ class UserProfile(models.Model):
     password = models.CharField(blank=True, max_length=50)
     email = models.CharField(blank=True, max_length=50, unique=True)
 
-    phone = models.CharField(blank=True, max_length=10)
+    phone = models.CharField(blank=True, max_length=15)
     school = models.CharField(blank=True, max_length=50)
     rating = models.DecimalField(blank=True, max_digits=2, decimal_places=1)
 
@@ -22,7 +22,7 @@ class UserProfile(models.Model):
 
 class UserAuthenticator(models.Model):
     user = models.OneToOneField(UserProfile)
-    authenticator = models.CharField(blank=True)
+    authenticator = models.CharField(max_length=200, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

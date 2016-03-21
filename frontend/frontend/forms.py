@@ -11,7 +11,7 @@ class SignupForm(forms.Form):
     last_name = forms.CharField(label='Last Name', max_length=100, widget=forms.TextInput(
         attrs={'class': 'form-control', 'placeholder': 'Doe'}), required=True)
     # todo: phonefield
-    phone = forms.CharField(label='Phone Number', widget=forms.TextInput(
+    phone = forms.CharField(label='Phone Number', max_length=15, widget=forms.TextInput(
         attrs={'class': 'form-control', 'placeholder': '777-777-7777'}))
     school = forms.CharField(label='School Name', max_length=100, widget=forms.TextInput(
         attrs={'class': 'form-control', 'placeholder': 'University of Virginia'}), required=True)

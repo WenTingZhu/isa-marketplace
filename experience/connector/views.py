@@ -79,9 +79,6 @@ def create_account(request):
     PUT http://experience:8001/create_account/
     """
     data = json.loads(request.body.decode("utf-8"))
-    # curl -H "Content-Type: application/json" -X PUT -d
-    # '{"driver":"1","open_seats":3, "departure": "2016-01-20 05:30"}'
-    # http://localhost:8000/api/v1/ride/ride/
     url = "http://models:8000/" + "api/v1/accounts/user/"
     resp = requests.put(url, json={
         'email': data['email'],
@@ -104,4 +101,4 @@ def create_account(request):
             'school': new_user['school'],
         }, status=HTTP_201_CREATED)
     else:
-        return JsonResponse({'message': 'Failed to create new Account'}, status=HTTP_401_UNAUTHORIZED)
+        return JsonResponse({'message': str(resp.content)}, status=HTTP_401_UNAUTHORIZED)

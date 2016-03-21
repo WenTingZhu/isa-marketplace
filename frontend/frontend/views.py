@@ -11,6 +11,7 @@ import requests
 from django.conf import settings
 from .forms import *
 
+
 experience = "http://" + settings.EXPERIENCE + ":8000/"
 
 
@@ -18,6 +19,7 @@ def index(request):
     """
     GET http://frontend:8000/
     """
+
     invalid_login = request.session.pop('invalid_login', False)
 
     if request.user.is_authenticated():
@@ -42,6 +44,7 @@ def create_user(request):
     """
     POST http://frontend:8002/create_user/
     """
+
     if request.method == 'POST':
         form = SignupForm(request.POST)
 
@@ -61,9 +64,12 @@ def create_user(request):
 
             resp = requests.put(url, json=data)
             if resp.status_code == HTTP_201_CREATED:
+                request.session['authenticator'] =  resp.json()['authenticator']
                 return redirect('dashboard')
             else:
                 return HttpResponse(resp.content)
+        else:
+            return HttpResponse(form.errors)
     return HttpResponse('failed')
 
 
