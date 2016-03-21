@@ -115,26 +115,31 @@ def verify_authenticator(request):
     POST http://models:8000/api/v1/accounts/authenticate/verify/
     """
     try:
+        data = json.loads(request.body.decode("utf-8"))
         # exists
         auth = UserAuthenticator.objects.get(
-            authenticator=request.data['authenticator'])
-        user_via_email = UserProfile.objects.get(email=request.data['email'])
+            authenticator=data['authenticator'])
+        user_via_email = UserProfile.objects.get(email=data['email'])
         # match
         if auth.user.id is not user_via_email.id:
             raise Exception('auth id and email id no match')
             return JsonResponse({"message": "User not Authenticated", "status": str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
         # not expired
-        if auth.date_created > datetime.datetime.now() - datetime.timedelta(days=1):
+        one_day_old = datetime.datetime.now() - datetime.timedelta(days=1)
+        one_day_old = one_day_old.replace(tzinfo=None)
+        actual = auth.date_created
+        actual = actual.replace(tzinfo=None)
+        if actual > one_day_old:
             return JsonResponse({"message": "User Authenticated", "status": str(HTTP_202_ACCEPTED)}, status=HTTP_202_ACCEPTED)
         else:
             raise Exception('time out of wack')
             return JsonResponse({"message": "User not Authenticated", "status": str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
-    except django.core.exceptions.DoesNotExist:
-        raise Exception('no exist')
+    except django.core.exceptions.ObjectDoesNotExist:
+        raise Exception('no exist' + data['authenticator'] + ':::::::::::' + data['email'])
         return JsonResponse({"message": "User not Authenticated", "status": str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
     except django.core.exceptions.MultipleObjectsReturned:
         # todo: unauthenticate all UserAuthenticator models that have
-        # authenticator==request.data['authenticator']
+        # authenticator==data['authenticator']
         return JsonResponse({"message": "User not Authenticated", "status": str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
 
 

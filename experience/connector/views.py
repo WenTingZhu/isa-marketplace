@@ -35,7 +35,7 @@ def authenticate_user(request):
                 'message': 'User Authenticated',
                 'authenticator': data['authenticator'],
                 'user_id': data['user_id'],
-                'email':data['email'],
+                'email': data['email'],
             },
             status=HTTP_202_ACCEPTED
         )
@@ -44,22 +44,22 @@ def authenticate_user(request):
 
 
 def user_logged_in(request):
-    if ('authenticator' not in request.GET) and ('authenticator' not in request.POST):
+    if ('HTTP_AUTHENTICATOR' not in request.META) or ('HTTP_EMAIL' not in request.META):
+        raise Exception('authenticator or email not in request.meta')
         return False
-    if ('email' not in request.GET) and ('email' not in request.POST):
-        return False
-    auth = request.GET['authenticator'] or request.POST['authenticator']
-    email = request.GET['email'] or request.POST['email']
+    auth = request.META.get('HTTP_AUTHENTICATOR')
+    email = request.META.get('HTTP_EMAIL')
     url = 'http://models:8000/api/v1/accounts/user/authenticate/verify/'
-    resp = requests.post(url, json={'authenticator': auth, 'email':email})
+    resp = requests.post(url, json={'authenticator': auth, 'email': email})
     if resp.status_code == HTTP_202_ACCEPTED:
         return True
     else:
         raise Exception(resp.content)
 
+
 @csrf_exempt
 @require_http_methods(["GET"])
-def get_ride(requst, id):
+def get_ride(request, id):
     if not user_logged_in(request):
         return JsonResponse({'message': 'Unauthenticated User'}, status=HTTP_401_UNAUTHORIZED)
     url = "http://models:8000/" + "api/v1/ride/ride/" + id + "/"
@@ -94,9 +94,6 @@ def create_ride(request):
     if not user_logged_in(request):
         return JsonResponse({'message': 'Unauthenticated User'}, status=HTTP_401_UNAUTHORIZED)
     data = json.loads(request.body.decode("utf-8"))
-    # curl -H "Content-Type: application/json" -X PUT -d
-    # '{"driver":"1","open_seats":3, "departure": "2016-01-20 05:30"}'
-    # http://localhost:8000/api/v1/ride/ride/
     url = "http://models:8000/" + "api/v1/ride/ride/"
     resp = requests.put(
         url, json={"driver": data['driver'], "open_seats": data['open_seats'], "departure": data['departure']})
@@ -104,8 +101,10 @@ def create_ride(request):
         new_ride = resp.json()
         return JsonResponse({'message': 'Ride Created', 'ride_id': new_ride['id'], 'open_seats': new_ride['open_seats'], 'departure': new_ride['departure']}, status=HTTP_201_CREATED)
     else:
+        return JsonResponse(resp.content)
         message = resp.text
         return JsonResponse({'message': message}, status=HTTP_401_UNAUTHORIZED)
+
 
 @csrf_exempt
 @require_http_methods(['GET'])
@@ -113,7 +112,14 @@ def user_detail(request, id):
     """
     GET http://experience:8000/user_detail/<user_id>/
     """
+    if not user_logged_in(request):
+        return JsonResponse({'message': 'Unauthenticated user'}, status=HTTP_401_UNAUTHORIZED)
     url = 'http://models:8000/api/v1/accounts/user/{}/'.format(id)
+    resp = requests.get(url)
+    if resp.status_code == HTTP_200_OK:
+        return JsonResponse(resp.json())
+    else:
+        return JsonResponse({'message': 'failed to get user details'}, status=HTTP_401_UNAUTHORIZED)
 
 
 @csrf_exempt
