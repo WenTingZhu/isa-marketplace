@@ -1,38 +1,43 @@
-{% extends "base.html" %} {% load staticfiles %} {% block title %} Rideshare - Create Ride {% endblock %} {% block extrastyle %} {% load staticfiles %}
-<link rel="stylesheet" type="text/css" href="{% static " frontend/css/style.css " %}">
-<style type="text/css">
-  th {
-    text-align: center;
-  }
-
-  td {
-    text-align: center;
-  }
-</style>
-{% endblock %} {% block heading_content %}
-<h1>
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %} Rideshare - Create Ride {% endblock %}
+{% block extrastyle %}
+  {% load staticfiles %}
+  <link rel="stylesheet" type="text/css" href="{% static " frontend/css/style.css " %}">
+{% endblock %}
+{% block heading_content %}
+  <h2>
     Create a New Ride!
-  </h1> {% endblock %} {% block content %}
-<form role="form" style="text-align: left; margin-top: 75px;" method="POST" action="{% url 'create_ride' %}">
-  {% csrf_token %}
-  <div class="form-group row">
-    <label for="open_seats" class="col-md-8" style="font-weight: normal; font-size: 21px;">Open Seats</label>
-    <div class="col-md-4">
-      <input type="number" class="form-control" id="open_seats" name="open_seats" style="width: 250px; float: right;">
+  </h2>
+{% endblock %}
+{% block content %}
+  <form role="form" style="text-align: left; margin-top: 75px;"  method="POST" action="{% url 'create_ride' %}">
+    {% csrf_token %}
+    {{ create_ride_form.non_field_errors }}
+    <div class="form-group row">
+      {{ create_ride_form.open_seats.errors }}
+      <label for="{{ create_ride_form.open_seats.id_for_label }}" class="col-md-8" style="font-weight: normal; font-size: 21px;">Open Seats</label>
+      <div class="col-md-4">
+        {{ create_ride_form.open_seats }}
+        <!-- <input type="number" class="form-control" id="open_seats" name="open_seats" style="width: 250px; float: right;"> -->
+      </div>
     </div>
-  </div>
-  <div class="form-group row">
-    <label for="departure" class="col-md-8" style="font-weight: normal; font-size: 21px;">Departure Date & Time</label>
-    <div class="col-md-4">
-      <input type="datetime-local" class="form-control" id="departure" name="departure" style="width: 250px; float: right;">
+    <div class="form-group row">
+      {{ create_ride_form.departure.errors }}
+      <label for="{{ create_ride_form.departure.id_for_label}}" class="col-md-8" style="font-weight: normal; font-size: 21px;">Departure Date & Time</label>
+      <div class="col-md-4">
+        {{ create_ride_form.departure }}
+        <!-- <input type="datetime-local" class="form-control" id="departure" name="departure" style="width: 250px; float: right;"> -->
+      </div>
     </div>
-  </div>
-  <br>
-  <hr>
-  <br>
-  <div style="text-align: center;">
-    <a href="{% url 'dashboard' %}" class="btn btn-default btn-lg"> Cancel </a>
-    <button type="submit" class="btn btn-primary btn-lg">Create Ride</button>
-  </div>
-</form>
+    <br>
+    <hr>
+    <br>
+    <div style="text-align: center;">
+      <div class="btn-group">
+        <a href="{% url 'dashboard' %}" class="btn btn-default btn-lg"> Cancel </a>
+        <button type="submit" class="btn btn-primary btn-lg">Create Ride</button>
+      </div>
+    </div>
+  </form>
 {% endblock %}

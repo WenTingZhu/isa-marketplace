@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
-# import requests
 import json
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.debug import sensitive_post_parameters
@@ -95,6 +94,9 @@ def login(request):
     return redirect('index')
 
 
+def logout(request):
+    # logout user
+    redirect('index')
 
 
 # @login_required(login_url='/login')
@@ -164,24 +166,34 @@ def create_ride(request):
     user = "John Doe"
     context = {'user': user, "authenticated": True}
     if request.method == "POST":
-        driver = 1
-        open_seats = request.POST['open_seats']
-        departure = request.POST['departure']
-        data = {'driver': driver, 'open_seats': open_seats, 'departure': departure}
-        url = experience + "create_ride/"
-        response = requests.put(url, json=data)
-        if response.status_code == HTTP_201_CREATED:
-            data = response.json()
-            ride_id = data['ride_id']
-            available_seats = data['open_seats']
-            departure = data["departure"]
-            ride_status = 1
-            driver = "John Doe"
-            details = {"ride_id": ride_id, "available_seats": available_seats, "departure": departure, "ride_status": ride_status, "driver": driver}
-            context['details'] = details
-            context['data'] = data
-            return redirect("ride_detail", int(ride_id))
+        form = CreateRideForm(data=request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            driver = 1
+            open_seats = data['open_seats']
+            departure = str(data['departure'])
+            values = {'driver': driver, 'open_seats': open_seats, 'departure': departure}
+            url = experience + "create_ride/"
+            response = requests.put(url, json=values)
+            if response.status_code == HTTP_201_CREATED:
+                data = response.json()
+                ride_id = data['ride_id']
+                available_seats = data['open_seats']
+                departure = data["departure"]
+                ride_status = 1
+                driver = "John Doe"
+                details = {"ride_id": ride_id, "available_seats": available_seats, "departure": departure, "ride_status": ride_status, "driver": driver}
+                context['details'] = details
+                context['data'] = data
+                return redirect("ride_detail", int(ride_id))
+            else:
+                context['message'] = "Request Failed"
+                context['message_details'] = response.text
+                return render(request, "error.html", context)
         else:
-            context['data'] = "FAILED"
-            return redirect("dashboard")
+            context['message'] = "Invalid Form Submission"
+            context['message_details'] = "Open Seats: " + request.POST['open_seats'] + "\n" + "Departure: " + request.POST['departure']
+            return render(request, "error.html", context)
+    create_ride_form = CreateRideForm()
+    context['create_ride_form'] = create_ride_form
     return render(request, "create_ride.html", context)

@@ -60,6 +60,7 @@ def user(request, id):
             data = {'message': 'user with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
 
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def authenticate_user(request):
@@ -141,7 +142,7 @@ def user_rides(request, id):
                 driver_ride["id"] = ride.pk
                 driver_ride["driver"] = str(ride.driver)
                 driver_ride["available_seats"] = str(ride.openSeats)
-                driver_ride["departure"] = str("{:%b %d, %Y %H:%M:%S}".format(ride.departure))
+                driver_ride["departure"] = str("{:%b %d, %Y %H:%M}".format(ride.departure))
                 driver_ride["status"] = str(ride.status)
                 driver_rides.append(driver_ride)
 
@@ -160,13 +161,3 @@ def user_rides(request, id):
         except UserProfile.DoesNotExist:
             data = {'message': 'user with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
-
-
-
-
-# SERVICES  list
-# GET
-# - name, email, number, school/university, rating (id)
-# POST
-# - create user (name, email, password, phone, school, rating)
-# - update user (name, email, password, phone, school, rating)

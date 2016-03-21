@@ -9,7 +9,7 @@ from connector.status_codes import *
 @csrf_exempt
 @require_http_methods(["GET"])
 def home():
-    return  JsonResponse({}, status=HTTP_200_OK)
+    return JsonResponse({}, status=HTTP_200_OK)
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -60,7 +60,8 @@ def create_ride(request):
         new_ride = resp.json()
         return JsonResponse({'message': 'Ride Created', 'ride_id': new_ride['id'], 'open_seats': new_ride['open_seats'], 'departure': new_ride['departure']}, status=HTTP_201_CREATED)
     else:
-        return JsonResponse({'message': 'Ride not found'}, status=HTTP_401_UNAUTHORIZED)
+        message = resp.text
+        return JsonResponse({'message': message}, status=HTTP_401_UNAUTHORIZED)
 
 
 @csrf_exempt
@@ -79,7 +80,7 @@ def create_account(request):
         'last_name':data['last_name'],
         'phone':data['phone'],
         'school':data['school'],
-    })
+
     if resp.status_code == HTTP_201_CREATED:
         new_user = resp.json()
         return JsonResponse({
@@ -93,11 +94,3 @@ def create_account(request):
             }, status=HTTP_201_CREATED)
     else:
         return JsonResponse({'message': 'Failed to create new Account'}, status=HTTP_401_UNAUTHORIZED)
-
-
-
-# SERVICES  list
-# GET
-# - driver, open seats, departure time, status
-# POST
-# -
