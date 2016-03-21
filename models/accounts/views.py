@@ -6,7 +6,7 @@ from accounts.status_codes import *
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 # from django.contrib.auth.models import User
 # from django.contrib.auth import authenticate
-from accounts.models import UserProfile
+from accounts.models import UserProfile, UserAuthenticator
 from ride.models import Ride
 from django.db.models import Q
 from datetime import datetime
@@ -35,8 +35,10 @@ def user(request, id):
                     user.first_name, 'email': user.email, 'number': user.phone, 'id': str(id), 'status': str(HTTP_200_OK)}
             return JsonResponse(data, status=HTTP_200_OK)
         except UserProfile.DoesNotExist:
-            data = {'message': 'user with id ' + id +
-                    ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
+            data = {
+                'message': 'user with id {} was not found'.format(id),
+                'status': str(HTTP_404_NOT_FOUND)
+            }
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
     else:
         data = json.loads(request.body.decode("utf-8"))
@@ -74,33 +76,61 @@ def authenticate_user(request):
     data = json.loads(request.body.decode("utf-8"))
     email = data['email']
     password = data['password']
-    user = User.objects.get(email=email)
+    user = UserProfile.objects.get(email=email)
 
     auth = UserAuthenticator(
-        user=user, date_created=datetime.datime.now(), authenticator=create_authenticator_string())
+        user=user,
+        date_created=datetime.datetime.now(),
+        authenticator=create_authenticator_string()
+    )
     auth.save()
-    return JsonResponse({'message': 'user authenticated', 'authenticator': auth.authenticator, 'status': str(HTTP_202_ACCEPTED)}, status=HTTP_202_ACCEPTED)
+    return JsonResponse(
+        {
+            'message': 'user authenticated',
+            'user_id': user.id,
+            'email': user.email,
+            'authenticator': auth.authenticator,
+            'status': str(HTTP_202_ACCEPTED)
+        },
+        status=HTTP_202_ACCEPTED
+    )
 
 
 def create_authenticator_string():
-    # return hmac.new (key = settings.SECRET_KEY.encode('utf-8'), msg =
-    # os.urandom(32), digestmod = 'sha256').hexdigest()
-    return 'sample_authenticator_string'
+    while True:
+        auth = hmac.new(
+            key=settings.SECRET_KEY.encode('utf-8'),
+            msg=os.urandom(32),
+            digestmod='sha256').hexdigest()
+        try:
+            UserAuthenticator.objects.get(authenticator=auth)
+        except UserAuthenticator.DoesNotExist:
+            return auth
 
 
 @csrf_exempt
 @require_http_methods(['POST'])
 def verify_authenticator(request):
+    """
+    POST http://models:8000/api/v1/accounts/authenticate/verify/
+    """
     try:
         # exists
         auth = UserAuthenticator.objects.get(
             authenticator=request.data['authenticator'])
+        user_via_email = UserProfile.objects.get(email=request.data['email'])
+        # match
+        if auth.user.id is not user_via_email.id:
+            raise Exception('auth id and email id no match')
+            return JsonResponse({"message": "User not Authenticated", "status": str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
         # not expired
         if auth.date_created > datetime.datetime.now() - datetime.timedelta(days=1):
             return JsonResponse({"message": "User Authenticated", "status": str(HTTP_202_ACCEPTED)}, status=HTTP_202_ACCEPTED)
         else:
+            raise Exception('time out of wack')
             return JsonResponse({"message": "User not Authenticated", "status": str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
     except django.core.exceptions.DoesNotExist:
+        raise Exception('no exist')
         return JsonResponse({"message": "User not Authenticated", "status": str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
     except django.core.exceptions.MultipleObjectsReturned:
         # todo: unauthenticate all UserAuthenticator models that have

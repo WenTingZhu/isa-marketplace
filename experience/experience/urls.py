@@ -8,7 +8,7 @@ urlpatterns = [
     # url(r'^blog/', include('blog.urls')),
     url(r'^home/$', 'connector.views.home', name='home'),
     url(r'^authenticate_user/$',
-        'connector.authenticate_user', name='authenticate_user'),
+        'connector.views.authenticate_user', name='authenticate_user'),
     url(r'^get_ride/(\d+)/$', 'connector.views.get_ride', name='get_ride'),
     url(r'^user_rides/(\d+)/$',
         'connector.views.user_rides', name='user_rides'),
@@ -16,5 +16,6 @@ urlpatterns = [
     url(r'^create_account/$',
         'connector.views.create_account', name='create_account'),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^user_detail/(\d+)/$', 'connector.views.user_detail', name='user_detail'),
 
 ]

@@ -22,7 +22,7 @@ class UserProfile(models.Model):
 
 class UserAuthenticator(models.Model):
     user = models.OneToOneField(UserProfile)
-    authenticator = models.CharField(max_length=200, blank=True)
+    authenticator = models.CharField(max_length=512, blank=True, unique=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

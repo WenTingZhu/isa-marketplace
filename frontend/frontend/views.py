@@ -22,8 +22,9 @@ def index(request):
 
     invalid_login = request.session.pop('invalid_login', False)
 
-    if request.user.is_authenticated():
-        return redirect('dashboard')
+    #todo: redirect to dashboard if user is already authenticated
+    # if request.user.is_authenticated():
+        # return redirect('dashboard')
 
     signup_form = SignupForm()
     login_form = LoginForm()
@@ -32,7 +33,8 @@ def index(request):
         "invalid_login": invalid_login,
         "authenticated": False,
         "signup_form": signup_form,
-        "login_form": login_form
+        "login_form": login_form,
+        "redirect_possible": 'next' in request.GET
     })
 
 
@@ -64,10 +66,23 @@ def create_user(request):
 
             resp = requests.put(url, json=data)
             if resp.status_code == HTTP_201_CREATED:
-                request.session['authenticator'] =  resp.json()['authenticator']
-                return redirect('dashboard')
+                user_id = resp.json()['user_id']
+                url = 'http://experience:8000/authenticate_user/'
+                resp = requests.post(url, json={
+                    'email': form.cleaned_data['email'],
+                    'password': form.cleaned_data['password'],
+                })
+                if resp.status_code == HTTP_202_ACCEPTED:
+                    auth = resp.json()['authenticator']
+                    request.session['authenticator'] = auth
+                    request.session['email'] = form.cleaned_data['email']
+                    request.session['user_id'] = user_id
+                    return redirect('dashboard')
+                else:
+                    request.session['invalid_login'] = True
+                    return HttpResponse('Created the user, but failed to authenticate:' + str(resp.content))
             else:
-                return HttpResponse(resp.content)
+                return HttpResponse(str(resp.content))
         else:
             return HttpResponse(form.errors)
     return HttpResponse('failed')
@@ -81,6 +96,7 @@ def login(request):
     """
     POST http://frontend:8002/login/
     """
+    next_page = request.GET.get('next') or 'index'
     if request.method == "POST":
         form = LoginForm()
         if form.is_valid():
@@ -91,13 +107,19 @@ def login(request):
             data = {'email': email, 'password': password}
             url = experience + "authenticate_user/"
             # Send request to experience and get response
-            response = requests.post(url,
-                                     data=json.dumps(data).encode('utf8'),
-                                     headers={'content-type': 'application/json'})
+            response = requests.post(
+                url,
+                data=json.dumps(data).encode('utf8'),
+                headers={'content-type': 'application/json'}
+            )
 
             if response.status_code == HTTP_202_ACCEPTED:
-                return HttpResponse(response.content)
-                return redirect('dashboard')
+                auth = resp.json()['authenticator']
+                user_id = resp.json()['user_id']
+                request.session['authenticator'] = auth
+                request.session['email'] = form.cleaned_data['email']
+                request.session['user_id'] = user_id
+                return redirect(next_page)
             else:
                 request.session['invalid_login'] = True
                 return redirect('index')
@@ -106,25 +128,25 @@ def login(request):
 
 def logout(request):
     # logout user
+    del request.session['email']
+    del request.session['authenticator']
     redirect('index')
 
 
 # @login_required(login_url='/login')
 def dashboard(request):
     # Grab user data
-    user = "John Doe"
-    context = {'user': user, "authenticated": True}
-    url = experience + "get_ride/1/"
-    response = requests.get(url)
+    user_id = request.session['user_id']
+    url = experience + "user_rides/{user_id}/".format(user_id=user_id)
+
+    response = requests.get(url, params={'authenticator':request.session['authenticator'], 'email':request.session['email']})
     if response.status_code == HTTP_200_OK:
         context["data"] = str(response.json())
+        return render(request, "dashboard.html", context)
     else:
-        context["data"] = "FAILED"
-    # url = expereince + "get_ride/2/"
-    # response = requests.get(url)
-    # if reponse["status"] == "200":
-    #     rides.append(response
-    return render(request, "dashboard.html", context)
+        return HttpResponse(str(response.content))
+        next_url = '/?next=' + request.path
+        return redirect(next_url)
 
 
 def ride_detail(request, id):
@@ -137,9 +159,10 @@ def ride_detail(request, id):
         data = data["data"]
         context["details"] = data
         context["data"] = data
+        return render(request, "ride-details.html", context)
     else:
-        context["data"] = "FAILED"
-    return render(request, "ride-details.html", context)
+        next_url = '/?next=' + request.path
+        return redirect(next_url)
 
 
 def rides(request):
@@ -164,7 +187,8 @@ def rides(request):
             "passenger_rides": passenger_rides
         })
     else:
-        return render(request, "rides.html", {'user': user, 'authenticated': authenticated, 'data': "FAILED"})
+        next_url = '/?next=' + request.path
+        return redirect(next_url)
 
 
 @csrf_protect
@@ -203,8 +227,10 @@ def create_ride(request):
                 return render(request, "error.html", context)
         else:
             context['message'] = "Invalid Form Submission"
-            context['message_details'] = "Open Seats: " + request.POST[
-                'open_seats'] + "\n" + "Departure: " + request.POST['departure']
+            context['message_details'] = "Open Seats: {}\nDeparture:{}".format(
+                request.POST['open_seats'],
+                request.POST['departure'],
+            )
             return render(request, "error.html", context)
     create_ride_form = CreateRideForm()
     context['create_ride_form'] = create_ride_form
