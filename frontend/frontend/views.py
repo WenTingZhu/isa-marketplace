@@ -213,30 +213,34 @@ def create_ride(request):
         form = CreateRideForm(data=request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            driver = 1
+
             open_seats = data['open_seats']
             departure = str(data['departure'])
             values = {
-                'driver': driver,
+                'driver': user_id,
                 'open_seats': open_seats,
                 'departure': departure
             }
             url = experience + "create_ride/"
-            response = requests.put(url, json=values, headers={
-                                    'authenticator': request.session['authenticator'], 'email': request.session['email']})
+            response = requests.put(
+                url,
+                json=values,
+                headers={
+                    'authenticator': request.session['authenticator'],
+                    'email': request.session['email']
+                }
+            )
             if response.status_code == HTTP_201_CREATED:
                 data = response.json()
                 ride_id = data['ride_id']
                 available_seats = data['open_seats']
                 departure = data["departure"]
-                ride_status = 1
-                driver = "John Doe"
                 details = {
                     "ride_id": ride_id,
                     "available_seats": available_seats,
                     "departure": departure,
-                    "ride_status": ride_status,
-                    "driver": driver
+                    "ride_status": 1,
+                    "driver": user_id
                 }
                 context['details'] = details
                 context['data'] = data
