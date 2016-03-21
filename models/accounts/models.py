@@ -7,7 +7,7 @@ class UserProfile(models.Model):
 	first_name = models.CharField(blank=True, max_length=50)
 	last_name = models.CharField(blank=True, max_length=50)
 	password = models.CharField(blank=True, max_length=50)
-	email = models.CharField(blank=True, max_length=50)
+	email = models.CharField(blank=True, max_length=50, unique=True)
 
 	phone = models.CharField(blank=True, max_length=10)
 	school = models.CharField(blank=True, max_length=50)
@@ -21,3 +21,8 @@ class UserProfile(models.Model):
 
 class UserAuthenticator(models.Model):
 	user = models.OneToOneField(UserProfile)
+	authenticator = models.CharField(blank=True)
+	date_created = models.DateTimeField(auto_now_add=True)
+
+	def __str__(self):
+		return "{} : {}".format(str(self.user), self.authenticator )

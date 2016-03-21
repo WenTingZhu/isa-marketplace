@@ -11,7 +11,7 @@ class SignupForm(forms.Form):
     first_name = forms.CharField(label='First Name',max_length=100, widget=forms.TextInput, required=True)
     last_name = forms.CharField(label='Last Name',max_length=100, widget=forms.TextInput, required=True)
     # todo: phonefield
-    phone = forms.CharField(label='Phone Number')
+    phone = forms.CharField(label='Phone Number', widget=forms.TextInput)
     school = forms.CharField(label='School Name',max_length=100, widget=forms.TextInput, required=True)
 
 

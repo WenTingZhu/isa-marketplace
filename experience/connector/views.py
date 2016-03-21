@@ -15,10 +15,11 @@ def home():
 @require_http_methods(["POST"])
 def authenticate_user(request):
     data = json.loads(request.body.decode("utf-8"))
-    url = authenticate_user_url(username, password)
-    resp = requests.post(url)
+    url = 'http://models:8000/api/v1/accounts/user/authenticate/'
+    resp = requests.post(url, json={'email':data['email'], 'password':data['password']})
     if resp.status == HTTP_202_ACCEPTED:
-        return JsonResponse({'message': 'User authenticated'}, status=HTTP_202_ACCEPTED)
+        data = resp.json()
+        return JsonResponse({'message': 'User Authenticated', 'authenticator':data['authenticator']}, status=HTTP_202_ACCEPTED)
     else:
         return JsonResponse({'message': 'Invalid Login'}, status=HTTP_401_UNAUTHORIZED)
 
@@ -68,28 +69,16 @@ def create_account(request):
     """
     PUT http://experience:8001/create_account/
     """
-    return JsonResponse({
-        'message': 'Account Created',
-        'user_id': 'hi',
-        'email': 'asfd',
-        'first_name': 'sdf',
-        'last_name':'sdf',
-        'phone':'sdf',
-        'school':'asdf',
-        }, status=HTTP_201_CREATED)
-
-
-
     data = json.loads(request.body.decode("utf-8"))
     # curl -H "Content-Type: application/json" -X PUT -d '{"driver":"1","open_seats":3, "departure": "2016-01-20 05:30"}' http://localhost:8000/api/v1/ride/ride/
     url = "http://models:8000/" + "api/v1/accounts/user/"
     resp = requests.put(url, json={
-        'email'=data['email'],
-        'password'=data['password'],
-        'first_name'=data['first_name'],
-        'last_name'=data['last_name'],
-        'phone'=data['phone'],
-        'school'=data['school']
+        'email':data['email'],
+        'password':data['password'],
+        'first_name':data['first_name'],
+        'last_name':data['last_name'],
+        'phone':data['phone'],
+        'school':data['school'],
     })
     if resp.status_code == HTTP_201_CREATED:
         new_user = resp.json()

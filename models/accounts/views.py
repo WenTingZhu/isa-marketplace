@@ -12,11 +12,12 @@ from django.db.models import Q
 from datetime import datetime
 from django.utils import formats
 import django.contrib.auth.hashers
-import exp_srvc_errors  # where I put some error codes the exp srvc can return
 import os, hmac
 # import django settings file
-import settings
+from rideshare import settings
 from django.contrib.auth.hashers import check_password
+import datetime
+
 
 # GET or UPDATE user
 @csrf_exempt
@@ -59,22 +60,6 @@ def user(request, id):
             data = {'message': 'user with id ' + id + ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
 
- def authenticate(self, email, password):
-        pwd_valid = check_password(password, settings.ADMIN_PASSWORD)
-        if login_valid and pwd_valid:
-            try:
-                user = User.objects.get(username=username)
-            except User.DoesNotExist:
-                # Create a new user. Note that we can set password
-                # to anything, because it won't be checked; the password
-                # from settings.py will.
-                user = User(username=username, password='get from settings.py')
-                user.is_staff = True
-                user.is_superuser = True
-                user.save()
-            return user
-        return None
-
 @csrf_exempt
 @require_http_methods(["POST"])
 def authenticate_user(request):
@@ -82,17 +67,34 @@ def authenticate_user(request):
     POST http://models:8000/api/v1/accounts/user/authenticate/
     """
     data = json.loads(request.body.decode("utf-8"))
-    # user = authenticate(username='john', password='secret')
     email = data['email']
     password = data['password']
+    user = User.objects.get(email=email)
 
-    authenticator = hmac.new (key = settings.SECRET_KEY.encode('utf-8'), msg = os.urandom(32), digestmod = 'sha256').hexdigest()
-    user = UserProfile.objects.get(data['user+id'])
-    if user is not None:
-        # the password verified for the user AND the account has not been disabled
-        return JsonResponse({'message': 'User authenticated'}, status=HTTP_202_ACCEPTED)
-    else:
-        return JsonResponse({'message': 'Invalid Login'}, status=HTTP_401_UNAUTHORIZED)
+    auth = UserAuthenticator(user=user, date_created=datetime.datime.now(), authenticator=create_authenticator_string())
+    auth.save()
+    return JsonResponse({'message':'user authenticated', 'authenticator':auth.authenticator, 'status':str(HTTP_202_ACCEPTED)}, status=HTTP_202_ACCEPTED)
+
+def create_authenticator_string():
+    # return hmac.new (key = settings.SECRET_KEY.encode('utf-8'), msg = os.urandom(32), digestmod = 'sha256').hexdigest()
+    return 'sample_authenticator_string'
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def verify_authenticator(request):
+    try:
+        # exists
+        auth = UserAuthenticator.objects.get(authenticator=request.data['authenticator'])
+        # not expired
+        if auth.date_created > datetime.datetime.now() - datetime.timedelta(days=1):
+            return JsonResponse({"message": "User Authenticated", "status":str(HTTP_202_ACCEPTED)}, status=HTTP_202_ACCEPTED)
+        else:
+            return JsonResponse({"message": "User not Authenticated", "status":str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
+    except django.core.exceptions.DoesNotExist:
+        return JsonResponse({"message": "User not Authenticated", "status":str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
+    except django.core.exceptions.MultipleObjectsReturned:
+        # todo: unauthenticate all UserAuthenticator models that have authenticator==request.data['authenticator']
+        return JsonResponse({"message": "User not Authenticated", "status":str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
 
 @csrf_exempt
 @require_http_methods(["PUT"])
@@ -101,9 +103,9 @@ def create_user(request):
     PUT http://localhost:8000/api/v1/accounts/user/
     """
     data = json.loads(request.body.decode("utf-8"))
-    new_user = UserProfile(email=data['email'], password=data['password'], first_name=data['first_name'], last_name=data['last_name'], phone=data['phone'], school=['school'], rating=0)
+    new_user = UserProfile(email=data['email'], password=data['password'], first_name=data['first_name'], last_name=data['last_name'], phone=data['phone'], school=data['school'], rating=0)
     new_user.save()
-    dataresult = {'status': str(HTTP_201_CREATED),'user_id': str(new_user.id), 'email': new_user.user.email, 'first_name': new_user.user.first_name, 'last_name': new_user.user.last_name, 'phone': new_user.phone, 'school': new_user.school, 'rating': str(new_user.rating)}
+    dataresult = {'status': str(HTTP_201_CREATED),'user_id': str(new_user.id), 'email': new_user.email, 'first_name': new_user.first_name, 'last_name': new_user.last_name, 'phone': new_user.phone, 'school': new_user.school, 'rating': str(new_user.rating)}
     return JsonResponse(dataresult, status=HTTP_201_CREATED)
 
 @csrf_exempt

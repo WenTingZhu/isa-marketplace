@@ -16,7 +16,7 @@ experience = "http://" + settings.EXPERIENCE + ":8000/"
 
 def index(request):
     """
-    GET http://frontend:8002/
+    GET http://frontend:8000/
     """
     invalid_login = request.session.pop('invalid_login', False)
 
@@ -48,7 +48,7 @@ def create_user(request):
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
-            url = 'http://experience:8001/create_account/'
+            url = 'http://experience:8000/create_account/'
             data={
                 'email':form.cleaned_data['email'],
                 'password':form.cleaned_data['password'],
@@ -61,7 +61,9 @@ def create_user(request):
             resp = requests.put(url, json=data)
             if resp.status_code==HTTP_201_CREATED:
                 return redirect('dashboard')
-    return redirect('index')
+            else:
+                return HttpResponse(resp.content)
+    return HttpResponse('failed')
 
 @sensitive_post_parameters()
 @csrf_protect
@@ -75,16 +77,17 @@ def login(request):
         form = LoginForm()
         if form.is_valid():
             # process data from form.cleaned_data
-            # username = request.POST['username']
-            # password = request.POST['password']
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
 
-            data = {'username': username, 'password': password}
-            url = experience + "autheticate_user/"
+            data = {'email': email, 'password': password}
+            url = experience + "authenticate_user/"
             # Send request to experience and get response
-            # response = requests.post(url, data=json.dumps(data).encode('utf8'), headers={'content-type': 'application/json'})
+            response = requests.post(url, data=json.dumps(data).encode('utf8'), headers={'content-type': 'application/json'})
 
-            response = 202
-            if response == 202:
+
+            if response.status_code == HTTP_202_ACCEPTED:
+                return HttpResponse(response.content)
                 return redirect('dashboard')
             else:
                 request.session['invalid_login'] = True
