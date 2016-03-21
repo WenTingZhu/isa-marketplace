@@ -22,7 +22,7 @@ def index(request):
 
     invalid_login = request.session.pop('invalid_login', False)
 
-    #todo: redirect to dashboard if user is already authenticated
+    # todo: redirect to dashboard if user is already authenticated
     # if request.user.is_authenticated():
         # return redirect('dashboard')
 
@@ -138,7 +138,8 @@ def dashboard(request):
     user_id = request.session['user_id']
     url = experience + "user_detail/{user_id}/".format(user_id=user_id)
     context = {}
-    response = requests.get(url, headers={'authenticator':request.session['authenticator'], 'email':request.session['email']})
+    response = requests.get(
+        url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
     if response.status_code == HTTP_200_OK:
         data = response.json()
         context["full_name"] = data['first_name'] + " " + data['last_name']
@@ -155,7 +156,8 @@ def ride_detail(request, id):
     user = "John Doe"
     context = {'user': user, "authenticated": True}
     url = experience + "get_ride/" + id + "/"
-    response = requests.get(url, headers={'authenticator':request.session['authenticator'], 'email':request.session['email']})
+    response = requests.get(
+        url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
     if response.status_code == HTTP_200_OK:
         data = response.json()
         data = data["data"]
@@ -170,23 +172,27 @@ def ride_detail(request, id):
 
 def rides(request):
     # invalid_login = request.session.pop('invalid_login', False)
-
-    url = experience + "user_rides/1/"
-    response = requests.get(url, headers={'authenticator':request.session['authenticator'], 'email':request.session['email']})
+    user_id = request.session['user_id']
+    url = experience + "user_rides/{}/".format(user_id)
+    response = requests.get(
+        url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
     if response.status_code == HTTP_200_OK:
         data = response.json()
         data = data["data"]
         driver_rides = json.loads(data["driver_rides"])
         passenger_rides = json.loads(data["passenger_rides"])
         url = experience + "user_detail/{user_id}/".format(user_id=user_id)
-        resp = requests.get(url, headers={'authenticator':request.session['authenticator'], 'email':request.session['email']})
+        resp = requests.get(
+            url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
         if resp.status_code == HTTP_200_OK:
-            full_name = resp.json()['first_name']
+            full_name = resp.json()[
+                'first_name'] + ' ' + resp.json()['last_name']
         else:
             full_name = 'Account'
         authenticated = True
         return render(request, "rides.html", {
-            'full_name': '',
+            'full_name': full_name,
+            'first_name': resp.json()['first_name'],
             'authenticated': authenticated,
             "driver_rides": driver_rides,
             "passenger_rides": passenger_rides
@@ -201,8 +207,8 @@ def rides(request):
 @never_cache
 @require_http_methods(["GET", "POST"])
 def create_ride(request):
-    user = "John Doe"
-    context = {'user': user, "authenticated": True}
+    user_id = request.session['user_id']
+    context = {}
     if request.method == "POST":
         form = CreateRideForm(data=request.POST)
         if form.is_valid():
@@ -210,10 +216,14 @@ def create_ride(request):
             driver = 1
             open_seats = data['open_seats']
             departure = str(data['departure'])
-            values = {'driver': driver, 'open_seats':
-                      open_seats, 'departure': departure}
+            values = {
+                'driver': driver,
+                'open_seats': open_seats,
+                'departure': departure
+            }
             url = experience + "create_ride/"
-            response = requests.put(url, json=values, headers={'authenticator':request.session['authenticator'], 'email':request.session['email']})
+            response = requests.put(url, json=values, headers={
+                                    'authenticator': request.session['authenticator'], 'email': request.session['email']})
             if response.status_code == HTTP_201_CREATED:
                 data = response.json()
                 ride_id = data['ride_id']
@@ -222,8 +232,12 @@ def create_ride(request):
                 ride_status = 1
                 driver = "John Doe"
                 details = {
-                    "ride_id": ride_id, "available_seats": available_seats,
-                    "departure": departure, "ride_status": ride_status, "driver": driver}
+                    "ride_id": ride_id,
+                    "available_seats": available_seats,
+                    "departure": departure,
+                    "ride_status": ride_status,
+                    "driver": driver
+                }
                 context['details'] = details
                 context['data'] = data
                 return redirect("ride_detail", int(ride_id))
