@@ -153,8 +153,7 @@ def dashboard(request):
 
 
 def ride_detail(request, id):
-    user = "John Doe"
-    context = {'user': user, "authenticated": True}
+    context = {}
     url = experience + "get_ride/" + id + "/"
     response = requests.get(
         url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
@@ -163,6 +162,16 @@ def ride_detail(request, id):
         data = data["data"]
         context["details"] = data
         context["data"] = data
+        url = experience + "user_detail/{user_id}/".format(user_id=user_id)
+        resp = requests.get(
+            url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
+        if resp.status_code == HTTP_200_OK:
+            data = response.json()
+            context["full_name"] = data['first_name'] + " " + data['last_name']
+            context['first_name'] = data['first_name']
+        else:
+            context['full_name'] = 'Account'
+        context['authenticated'] = True
         return render(request, "ride-details.html", context)
     else:
         return HttpResponse(response.content)
@@ -185,8 +194,8 @@ def rides(request):
         resp = requests.get(
             url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
         if resp.status_code == HTTP_200_OK:
-            full_name = resp.json()[
-                'first_name'] + ' ' + resp.json()['last_name']
+            data = resp.json()
+            full_name = data['first_name'] + ' ' + data['last_name']
         else:
             full_name = 'Account'
         authenticated = True
