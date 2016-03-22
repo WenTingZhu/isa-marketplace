@@ -85,7 +85,7 @@ def create_user(request):
                 return redirect('error', message='Failed to Create User')
         else:
             return redirect('error', message=("Invalid Input for: "+str(form.errors)))
-    return HttpResponse('failed')
+    return redirect('error')
 
 @csrf_protect
 @require_http_methods(['GET'])
@@ -125,15 +125,16 @@ def login(request):
                 request.session['user_id'] = user_id
                 return redirect(next_page)
             else:
-                return HttpResponse(response.content)
                 request.session['invalid_login'] = True
-                return redirect('index')
+                return redirect('error', message='Invalid Login. Please try logging in again.')
         else:
-            return HttpResponse(form.errors)
-    return redirect('asdfad')
+            return redirect('error', message='Invalid Login Credentials')
+    return redirect('error')
 
 
 def logout(request):
+    if 'email' not in request.session or 'authenticator' not in request.session:
+        return redirect('index')
     # logout user
     del request.session['email']
     del request.session['authenticator']
@@ -145,6 +146,9 @@ def logout(request):
 
 # @login_required(login_url='/login')
 def dashboard(request):
+    if 'email' not in request.session or 'authenticator' not in request.session:
+        return redirect('index')
+
     # Grab user data
     user_id = request.session['user_id']
     url = experience + "user_detail/{user_id}/".format(user_id=user_id)
@@ -158,12 +162,12 @@ def dashboard(request):
         context['authenticated'] = True
         return render(request, "dashboard.html", context)
     else:
-        return HttpResponse(str(response.content))
-        next_url = '/?next=' + request.path
-        return redirect(next_url)
+        return redirect('error', message='Could not find details for user')
 
 
 def ride_detail(request, id):
+    if 'email' not in request.session or 'authenticator' not in request.session:
+        return redirect('index')
     context = {}
     url = experience + "get_ride/" + id + "/"
     response = requests.get(
@@ -185,12 +189,13 @@ def ride_detail(request, id):
         context['authenticated'] = True
         return render(request, "ride-details.html", context)
     else:
-        return HttpResponse(response.content)
-        next_url = '/?next=' + request.path
-        return redirect(next_url)
+        return redirect('error', message='Could not find details for ride')
+
 
 
 def rides(request):
+    if 'email' not in request.session or 'authenticator' not in request.session:
+        return redirect('index')
     # invalid_login = request.session.pop('invalid_login', False)
     user_id = request.session['user_id']
     url = experience + "user_rides/{}/".format(user_id)
@@ -218,15 +223,17 @@ def rides(request):
             "passenger_rides": passenger_rides
         })
     else:
-        return HttpResponse(response.content)
-        next_url = '/?next=' + request.path
-        return redirect(next_url)
+        return redirect('error', message='Could not find details for rides')
+
 
 
 @csrf_protect
 @never_cache
 @require_http_methods(["GET", "POST"])
 def create_ride(request):
+    if 'email' not in request.session or 'authenticator' not in request.session:
+        return redirect('index')
+
     user_id = request.session['user_id']
     context = {}
     if request.method == "POST":
@@ -266,16 +273,9 @@ def create_ride(request):
                 context['data'] = data
                 return redirect("ride_detail", int(ride_id))
             else:
-                context['message'] = "Request Failed"
-                context['message_details'] = response.text
-                return render(request, "error.html", context)
+                return redirect('error', message='Could not find details for user')
         else:
-            context['message'] = "Invalid Form Submission"
-            context['message_details'] = "Open Seats: {}\nDeparture:{}".format(
-                request.POST['open_seats'],
-                request.POST['departure'],
-            )
-            return render(request, "error.html", context)
+            return redirect('error', message='Invalid Form Submission')
     create_ride_form = CreateRideForm()
     context['create_ride_form'] = create_ride_form
     return render(request, "create_ride.html", context)
