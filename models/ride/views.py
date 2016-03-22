@@ -84,8 +84,8 @@ def delete_ride(request, id):
         return JsonResponse(data, status=HTTP_404_NOT_FOUND)
 
 @csrf_exempt
-@require_http_methods(["GET", "POST"])
-def all_rides(request, id):
+@require_http_methods(["GET"])
+def all_rides(request):
     """
     GET http://models:8000/api/v1/ride/rides/
     """
@@ -93,7 +93,7 @@ def all_rides(request, id):
         try:
             # user = UserProfile.objects.get(pk=id)
             # rides = Ride.objects.filter(driver=id)
-            rides = Ride.objects
+            rides = Ride.objects.all()
             rides_list = []
             for ride in rides:
                 driver_ride = {}
@@ -112,7 +112,6 @@ def all_rides(request, id):
         except UserProfile.DoesNotExist:
             data = {'message':'No rides found.', 'status': str(HTTP_404_NOT_FOUND)}
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
-
 
 @csrf_exempt
 @require_http_methods(["GET", "POST"])

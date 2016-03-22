@@ -160,31 +160,15 @@ def dashboard(request):
         # raise Exception(data)
         context["full_name"] = data['first_name'] + " " + data['last_name']
         context['first_name'] = data['first_name']
+        context['all_rides'] = []
         context['authenticated'] = True
-
-        # url = experience + "all_rides/"
-        # response = requests.get(
-        #     url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
-        # if response.status_code == HTTP_200_OK:
-        #     data = response.json()
-        #     # raise Exception(data)
-        #     data = data["data"]
-        #     all_rides = json.loads(data["all_rides"])
-        #     url = experience + "user_detail/{user_id}/".format(user_id=user_id)
-        #     resp = requests.get(
-        #         url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
-        #     if resp.status_code == HTTP_200_OK:
-        #         data = resp.json()
-        #         full_name = data['first_name'] + ' ' + data['last_name']
-        #     else:
-        #         full_name = 'Account'
-        #     authenticated = True
-        #     return render(request, "rides.html", {
-        #         'full_name': full_name,
-        #         'first_name': resp.json()['first_name'],
-        #         'authenticated': authenticated,
-        #         "all_rides": all_rides,
-        #     })
+        url = experience + "all_rides/"
+        response = requests.get(
+            url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
+        if response.status_code == HTTP_200_OK:
+            data = response.json()['data']
+            all_rides = json.loads(data['rides_list'])
+            context['all_rides'] = all_rides
         return render(request, "dashboard.html", context)
     else:
         return redirect('error')

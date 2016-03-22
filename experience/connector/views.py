@@ -84,18 +84,19 @@ def unauthenticate_user(request):
         return JsonResponse({'message': 'User Unauthenticated'}, status=HTTP_200_OK)
 
 
-# @csrf_exempt
-# @require_http_methods(["GET"])
-# def all_rides(request, id):
-#     if not user_logged_in(request):
-#         return JsonResponse({'message': 'Unauthenticated User'}, status=HTTP_401_UNAUTHORIZED)
-#     url = "http://models:8000/" + "api/v1/ride/rides/"
-#     resp = requests.get(url)
-#     if resp.status_code == HTTP_200_OK:
-#         data = resp.json()
-#         return JsonResponse({'message': 'Ride found', "data": data}, status=HTTP_200_OK)
-#     else:
-#         return JsonResponse({'message': 'Ride not found'}, status=HTTP_401_UNAUTHORIZED)
+@csrf_exempt
+@require_http_methods(["GET"])
+def all_rides(request):
+    if not user_logged_in(request):
+        return JsonResponse({'message': 'Unauthenticated User'}, status=HTTP_401_UNAUTHORIZED)
+    url = "http://models:8000/" + "api/v1/ride/ride/rides/"
+    resp = requests.get(url)
+    if resp.status_code == HTTP_200_OK:
+        data = resp.json()
+        return JsonResponse({'message': 'Rides found', "data": data}, status=HTTP_200_OK)
+    else:
+        return HttpResponse(resp.text)
+        return JsonResponse({'message': 'Rides not found'}, status=HTTP_401_UNAUTHORIZED)
 
 
 @csrf_exempt
