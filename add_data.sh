@@ -1,4 +1,3 @@
-
 # create users
 curl -H "Content-Type: application/json" -X PUT -d '{"email":"johndoe@email.com","password":"password", "first_name": "John", "last_name": "Doe", "phone": "7777777777", "school":"UVA"}' http://localhost:8000/api/v1/accounts/user/
 curl -H "Content-Type: application/json" -X PUT -d '{"email":"ho2es@virginia.com","password":"****", "first_name": "Himanshu", "last_name": "Ojha", "phone": "5712862986", "school":"UT Texas"}' http://localhost:8000/api/v1/accounts/user/

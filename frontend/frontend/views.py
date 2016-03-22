@@ -80,11 +80,12 @@ def create_user(request):
                     return redirect('dashboard')
                 else:
                     request.session['invalid_login'] = True
-                    return redirect('error', message='Created user, but failed to authenticate user')
+                    return redirect('error')
             else:
-                return redirect('error', message='Failed to Create User')
+                return HttpResponse(resp.content)
+                return redirect('error')
         else:
-            return redirect('error', message=("Invalid Input for: "+str(form.errors)))
+            return redirect('error')
     return redirect('error')
 
 @csrf_protect
@@ -108,7 +109,6 @@ def login(request):
             # process data from form.cleaned_data
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-
             data = {'email': email, 'password': password}
             url = experience + "authenticate_user/"
             # Send request to experience and get response
@@ -126,9 +126,9 @@ def login(request):
                 return redirect(next_page)
             else:
                 request.session['invalid_login'] = True
-                return redirect('error', message='Invalid Login. Please try logging in again.')
+                return redirect('error')
         else:
-            return redirect('error', message='Invalid Login Credentials')
+            return redirect('error')
     return redirect('error')
 
 
@@ -189,7 +189,7 @@ def dashboard(request):
         # })
         return render(request, "dashboard.html", context)
     else:
-        return redirect('error', message='Could not find details for user')
+        return redirect('error')
 
 
 def ride_detail(request, id):
@@ -216,7 +216,7 @@ def ride_detail(request, id):
         context['authenticated'] = True
         return render(request, "ride-details.html", context)
     else:
-        return redirect('error', message='Could not find details for ride')
+        return redirect('error')
 
 
 
@@ -251,7 +251,7 @@ def rides(request):
             "passenger_rides": passenger_rides
         })
     else:
-        return redirect('error', message='Could not find details for rides')
+        return redirect('error')
 
 
 
@@ -301,9 +301,9 @@ def create_ride(request):
                 context['data'] = data
                 return redirect("ride_detail", int(ride_id))
             else:
-                return redirect('error', message='Could not find details for user')
+                return redirect('error')
         else:
-            return redirect('error', message='Invalid Form Submission')
+            return redirect('error')
     create_ride_form = CreateRideForm()
     context['create_ride_form'] = create_ride_form
     return render(request, "create_ride.html", context)

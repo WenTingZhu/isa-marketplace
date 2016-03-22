@@ -109,7 +109,6 @@ def authenticate_user(request):
                 auth.delete()
         except django.core.exceptions.ObjectDoesNotExist:
             pass
-
         # new authenticator
         auth = UserAuthenticator(
             user=user,
