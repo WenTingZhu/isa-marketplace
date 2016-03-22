@@ -22,9 +22,11 @@ def index(request):
 
     invalid_login = request.session.pop('invalid_login', False)
 
-    # todo: redirect to dashboard if user is already authenticated
-    # if request.user.is_authenticated():
-        # return redirect('dashboard')
+    # redirect to dashboard if user is already authenticated
+    if 'authenticator' in request.session and 'email' in request.session:
+        resp = requests.get('http://experience:8000/verify_authenticator/', headers={'authenticator':request.session['authenticator'], 'email':request.session['email']})
+        if resp.status_code == HTTP_200_OK:
+            redirect('dashboard')
 
     signup_form = SignupForm()
     login_form = LoginForm()
@@ -46,7 +48,6 @@ def create_user(request):
     """
     POST http://frontend:8002/create_user/
     """
-
     if request.method == 'POST':
         form = SignupForm(request.POST)
 
@@ -95,9 +96,9 @@ def login(request):
     """
     POST http://frontend:8002/login/
     """
-    next_page = request.GET.get('next') or 'index'
+    next_page = request.GET.get('next') or 'dashboard'
     if request.method == "POST":
-        form = LoginForm()
+        form = LoginForm(request.POST)
         if form.is_valid():
             # process data from form.cleaned_data
             email = form.cleaned_data['email']
@@ -111,25 +112,30 @@ def login(request):
                 data=json.dumps(data).encode('utf8'),
                 headers={'content-type': 'application/json'}
             )
-
             if response.status_code == HTTP_202_ACCEPTED:
-                auth = resp.json()['authenticator']
-                user_id = resp.json()['user_id']
+                auth = response.json()['authenticator']
+                user_id = response.json()['user_id']
                 request.session['authenticator'] = auth
                 request.session['email'] = form.cleaned_data['email']
                 request.session['user_id'] = user_id
                 return redirect(next_page)
             else:
+                return HttpResponse(response.content)
                 request.session['invalid_login'] = True
                 return redirect('index')
-    return redirect('index')
+        else:
+            return HttpResponse(form.errors)
+    return redirect('asdfad')
 
 
 def logout(request):
     # logout user
     del request.session['email']
     del request.session['authenticator']
-    redirect('index')
+    # ignore result
+    requests.post(experience+'unauthenticate_user/')
+
+    return redirect('index')
 
 
 # @login_required(login_url='/login')
@@ -162,11 +168,11 @@ def ride_detail(request, id):
         data = data["data"]
         context["details"] = data
         context["data"] = data
-        url = experience + "user_detail/{user_id}/".format(user_id=user_id)
+        url = experience + "user_detail/{user_id}/".format(user_id=request.session['user_id'])
         resp = requests.get(
             url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
         if resp.status_code == HTTP_200_OK:
-            data = response.json()
+            data = resp.json()
             context["full_name"] = data['first_name'] + " " + data['last_name']
             context['first_name'] = data['first_name']
         else:

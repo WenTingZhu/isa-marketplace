@@ -9,7 +9,7 @@ from connector.status_codes import *
 
 @csrf_exempt
 @require_http_methods(["GET"])
-def home():
+def home(request):
     return JsonResponse({}, status=HTTP_200_OK)
 
 
@@ -43,6 +43,17 @@ def authenticate_user(request):
         return JsonResponse({'message': 'Invalid Login' + str(resp.content)}, status=HTTP_401_UNAUTHORIZED)
 
 
+@csrf_exempt
+@require_http_methods(["GET"])
+def verify_authenticator(request):
+    """
+    GET http://experience:8000/verify_authenticator/
+    """
+    if user_logged_in(request):
+        return JsonResponse({'message':'User logged in', 'status':str(HTTP_200_OK)}, status=HTTP_200_OK)
+    else:
+        return JsonResponse({'message':'Invalid Login', 'status':str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
+
 def user_logged_in(request):
     if ('HTTP_AUTHENTICATOR' not in request.META) or ('HTTP_EMAIL' not in request.META):
         raise Exception('authenticator or email not in request.meta')
@@ -56,6 +67,19 @@ def user_logged_in(request):
     else:
         raise Exception(resp.content)
 
+@csrf_exempt
+@require_http_methods(["POST"])
+def unauthenticate_user(request):
+    if not user_logged_in(request):
+        return JsonResponse({'message': 'User Unauthenticated'}, status=HTTP_200_OK)
+    url = 'http://models:8000/api/v1/accounts/user/unauthenticate/'
+    auth = request.META.get('HTTP_AUTHENTICATOR')
+    email = request.META.get('HTTP_EMAIL')
+    resp = requests.post(url,json={'authenticator': auth, 'email': email})
+    if resp.status_code == HTTP_200_OK:
+        return JsonResponse({'message': 'Failed to unauthenticate User'}, status=HTTP_401_UNAUTHORIZED)
+    else:
+        return JsonResponse({'message': 'User Unauthenticated'}, status=HTTP_200_OK)
 
 @csrf_exempt
 @require_http_methods(["GET"])
@@ -117,6 +141,7 @@ def user_detail(request, id):
     url = 'http://models:8000/api/v1/accounts/user/{}/'.format(id)
     resp = requests.get(url)
     if resp.status_code == HTTP_200_OK:
+
         return JsonResponse(resp.json())
     else:
         return JsonResponse({'message': 'failed to get user details'}, status=HTTP_401_UNAUTHORIZED)
