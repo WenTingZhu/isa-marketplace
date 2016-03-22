@@ -80,9 +80,9 @@ def create_user(request):
                     return redirect('dashboard')
                 else:
                     request.session['invalid_login'] = True
-                    return HttpResponse('Created the user, but failed to authenticate:' + str(resp.content))
+                    return redirect('error', message='Created user, but failed to authenticate user')
             else:
-                return redirect('error', message=resp.content)
+                return redirect('error', message='Failed to Create User')
         else:
             return redirect('error', message=("Invalid Input for: "+str(form.errors)))
     return HttpResponse('failed')
