@@ -19,7 +19,11 @@
         <span clas="icon-bar"></span>
         <span clas="icon-bar"></span>
       </button>
+      {% if authenticated %}
+      <a class="navbar-brand" href="{% url 'dashboard'%}">RideShare</a>
+      {% else %}
       <a class="navbar-brand" href="{% url 'index'%}">RideShare</a>
+      {% endif %}
     </div>
     <div id="navbar" class="navbar-collapse collapse" aria-expanded="true">
       <ul class="nav navbar-nav navbar-right" style="padding-right: 15px;">

@@ -26,7 +26,7 @@ def index(request):
     if 'authenticator' in request.session and 'email' in request.session:
         resp = requests.get('http://experience:8000/verify_authenticator/', headers={'authenticator':request.session['authenticator'], 'email':request.session['email']})
         if resp.status_code == HTTP_200_OK:
-            redirect('dashboard')
+            return redirect('dashboard')
 
     signup_form = SignupForm()
     login_form = LoginForm()
@@ -82,11 +82,16 @@ def create_user(request):
                     request.session['invalid_login'] = True
                     return HttpResponse('Created the user, but failed to authenticate:' + str(resp.content))
             else:
-                return HttpResponse(str(resp.content))
+                return redirect('error', message=resp.content)
         else:
-            return HttpResponse(form.errors)
+            return redirect('error', message=("Invalid Input for: "+str(form.errors)))
     return HttpResponse('failed')
 
+@csrf_protect
+@require_http_methods(['GET'])
+def error(request):
+    msg = request.GET.get('message','Internal Server Error')
+    return render(request, 'error.html', {'message':msg})
 
 @sensitive_post_parameters()
 @csrf_protect
