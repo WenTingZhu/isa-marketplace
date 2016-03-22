@@ -142,9 +142,36 @@ def dashboard(request):
         url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
     if response.status_code == HTTP_200_OK:
         data = response.json()
+        # raise Exception(data)
         context["full_name"] = data['first_name'] + " " + data['last_name']
         context['first_name'] = data['first_name']
         context['authenticated'] = True
+
+        # user_id = request.session['user_id']
+        # url = experience + "user_rides/{}/".format(user_id)
+        # response = requests.get(
+        #     url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
+        # if response.status_code == HTTP_200_OK:
+        #     data = response.json()
+        # raise Exception(data)
+        # driver_rides = json.loads(data["driver_rides"])
+        # passenger_rides = json.loads(data["passenger_rides"])
+        # url = experience + "user_detail/{user_id}/".format(user_id=user_id)
+        # resp = requests.get(
+        #     url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
+        # if resp.status_code == HTTP_200_OK:
+        #     full_name = resp.json()[
+        #         'first_name'] + ' ' + resp.json()['last_name']
+        # else:
+        #     full_name = 'Account'
+        # authenticated = True
+        # return render(request, "dashboard.html", {
+        #     'full_name': full_name,
+        #     'first_name': resp.json()['first_name'],
+        #     'authenticated': authenticated,
+        #     "driver_rides": driver_rides,
+        #     "passenger_rides": passenger_rides
+        # })
         return render(request, "dashboard.html", context)
     else:
         return HttpResponse(str(response.content))
@@ -178,6 +205,7 @@ def rides(request):
         url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
     if response.status_code == HTTP_200_OK:
         data = response.json()
+        # raise Exception(data)
         data = data["data"]
         driver_rides = json.loads(data["driver_rides"])
         passenger_rides = json.loads(data["passenger_rides"])

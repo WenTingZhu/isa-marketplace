@@ -56,13 +56,26 @@ def user_logged_in(request):
     else:
         raise Exception(resp.content)
 
+# @csrf_exempt
+# @require_http_methods(["GET"])
+# def all_rides(request, id):
+#     if not user_logged_in(request):
+#         return JsonResponse({'message': 'Unauthenticated User'}, status=HTTP_401_UNAUTHORIZED)
+#     url = "http://models:8000/" + "api/v1/ride/rides/"
+#     resp = requests.get(url)
+#     if resp.status_code == HTTP_200_OK:
+#         data = resp.json()
+#         return JsonResponse({'message': 'Ride found', "data": data}, status=HTTP_200_OK)
+#     else:
+#         return JsonResponse({'message': 'Ride not found'}, status=HTTP_401_UNAUTHORIZED)
+
 
 @csrf_exempt
 @require_http_methods(["GET"])
-def get_ride(request, id):
+def user_rides(request, id):
     if not user_logged_in(request):
         return JsonResponse({'message': 'Unauthenticated User'}, status=HTTP_401_UNAUTHORIZED)
-    url = "http://models:8000/" + "api/v1/ride/ride/" + id + "/"
+    url = "http://models:8000/" + "api/v1/accounts/user/" + id + "/rides/"
     resp = requests.get(url)
     if resp.status_code == HTTP_200_OK:
         data = resp.json()
@@ -73,10 +86,10 @@ def get_ride(request, id):
 
 @csrf_exempt
 @require_http_methods(["GET"])
-def user_rides(request, id):
+def get_ride(request, id):
     if not user_logged_in(request):
         return JsonResponse({'message': 'Unauthenticated User'}, status=HTTP_401_UNAUTHORIZED)
-    url = "http://models:8000/" + "api/v1/accounts/user/" + id + "/rides/"
+    url = "http://models:8000/" + "api/v1/ride/ride/" + id + "/"
     resp = requests.get(url)
     if resp.status_code == HTTP_200_OK:
         data = resp.json()
@@ -117,6 +130,7 @@ def user_detail(request, id):
     url = 'http://models:8000/api/v1/accounts/user/{}/'.format(id)
     resp = requests.get(url)
     if resp.status_code == HTTP_200_OK:
+        # raise Exception(resp.json())
         return JsonResponse(resp.json())
     else:
         return JsonResponse({'message': 'failed to get user details'}, status=HTTP_401_UNAUTHORIZED)

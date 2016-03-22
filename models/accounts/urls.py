@@ -8,10 +8,7 @@ urlpatterns = [
         views.authenticate_user, name='authenticate_user'),
     url(r'^user/authenticate/verify/$',
         views.verify_authenticator, name='verify_authenticator'),
-
     url(r'^user/$', views.create_user, name='create_user'),
     url(r'^user/delete/(\d+)/$', views.delete_user, name='delete_user'),
     url(r'^user/(\d+)/rides/$', views.user_rides, name='user_rides'),
-
-
 ]
