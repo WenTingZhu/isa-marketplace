@@ -22,9 +22,11 @@ def index(request):
 
     invalid_login = request.session.pop('invalid_login', False)
 
-    # todo: redirect to dashboard if user is already authenticated
-    # if request.user.is_authenticated():
-        # return redirect('dashboard')
+    # redirect to dashboard if user is already authenticated
+    if 'authenticator' in request.session and 'email' in request.session:
+        resp = requests.get('http://experience:8000/verify_authenticator/', headers={'authenticator':request.session['authenticator'], 'email':request.session['email']})
+        if resp.status_code == HTTP_200_OK:
+            return redirect('dashboard')
 
     signup_form = SignupForm()
     login_form = LoginForm()
@@ -46,7 +48,6 @@ def create_user(request):
     """
     POST http://frontend:8002/create_user/
     """
-
     if request.method == 'POST':
         form = SignupForm(request.POST)
 
@@ -79,13 +80,18 @@ def create_user(request):
                     return redirect('dashboard')
                 else:
                     request.session['invalid_login'] = True
-                    return HttpResponse('Created the user, but failed to authenticate:' + str(resp.content))
+                    return redirect('error', message='Created user, but failed to authenticate user')
             else:
-                return HttpResponse(str(resp.content))
+                return redirect('error', message='Failed to Create User')
         else:
-            return HttpResponse(form.errors)
-    return HttpResponse('failed')
+            return redirect('error', message=("Invalid Input for: "+str(form.errors)))
+    return redirect('error')
 
+@csrf_protect
+@require_http_methods(['GET'])
+def error(request):
+    msg = request.GET.get('message','Internal Server Error')
+    return render(request, 'error.html', {'message':msg})
 
 @sensitive_post_parameters()
 @csrf_protect
@@ -95,9 +101,9 @@ def login(request):
     """
     POST http://frontend:8002/login/
     """
-    next_page = request.GET.get('next') or 'index'
+    next_page = request.GET.get('next') or 'dashboard'
     if request.method == "POST":
-        form = LoginForm()
+        form = LoginForm(request.POST)
         if form.is_valid():
             # process data from form.cleaned_data
             email = form.cleaned_data['email']
@@ -111,29 +117,38 @@ def login(request):
                 data=json.dumps(data).encode('utf8'),
                 headers={'content-type': 'application/json'}
             )
-
             if response.status_code == HTTP_202_ACCEPTED:
-                auth = resp.json()['authenticator']
-                user_id = resp.json()['user_id']
+                auth = response.json()['authenticator']
+                user_id = response.json()['user_id']
                 request.session['authenticator'] = auth
                 request.session['email'] = form.cleaned_data['email']
                 request.session['user_id'] = user_id
                 return redirect(next_page)
             else:
                 request.session['invalid_login'] = True
-                return redirect('index')
-    return redirect('index')
+                return redirect('error', message='Invalid Login. Please try logging in again.')
+        else:
+            return redirect('error', message='Invalid Login Credentials')
+    return redirect('error')
 
 
 def logout(request):
+    if 'email' not in request.session or 'authenticator' not in request.session:
+        return redirect('index')
     # logout user
     del request.session['email']
     del request.session['authenticator']
-    redirect('index')
+    # ignore result
+    requests.post(experience+'unauthenticate_user/')
+
+    return redirect('index')
 
 
 # @login_required(login_url='/login')
 def dashboard(request):
+    if 'email' not in request.session or 'authenticator' not in request.session:
+        return redirect('index')
+
     # Grab user data
     user_id = request.session['user_id']
     url = experience + "user_detail/{user_id}/".format(user_id=user_id)
@@ -174,14 +189,13 @@ def dashboard(request):
         # })
         return render(request, "dashboard.html", context)
     else:
-        return HttpResponse(str(response.content))
-        next_url = '/?next=' + request.path
-        return redirect(next_url)
+        return redirect('error', message='Could not find details for user')
 
 
 def ride_detail(request, id):
-    user = "John Doe"
-    context = {'user': user, "authenticated": True}
+    if 'email' not in request.session or 'authenticator' not in request.session:
+        return redirect('index')
+    context = {}
     url = experience + "get_ride/" + id + "/"
     response = requests.get(
         url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
@@ -190,14 +204,25 @@ def ride_detail(request, id):
         data = data["data"]
         context["details"] = data
         context["data"] = data
+        url = experience + "user_detail/{user_id}/".format(user_id=request.session['user_id'])
+        resp = requests.get(
+            url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
+        if resp.status_code == HTTP_200_OK:
+            data = resp.json()
+            context["full_name"] = data['first_name'] + " " + data['last_name']
+            context['first_name'] = data['first_name']
+        else:
+            context['full_name'] = 'Account'
+        context['authenticated'] = True
         return render(request, "ride-details.html", context)
     else:
-        return HttpResponse(response.content)
-        next_url = '/?next=' + request.path
-        return redirect(next_url)
+        return redirect('error', message='Could not find details for ride')
+
 
 
 def rides(request):
+    if 'email' not in request.session or 'authenticator' not in request.session:
+        return redirect('index')
     # invalid_login = request.session.pop('invalid_login', False)
     user_id = request.session['user_id']
     url = experience + "user_rides/{}/".format(user_id)
@@ -213,8 +238,8 @@ def rides(request):
         resp = requests.get(
             url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
         if resp.status_code == HTTP_200_OK:
-            full_name = resp.json()[
-                'first_name'] + ' ' + resp.json()['last_name']
+            data = resp.json()
+            full_name = data['first_name'] + ' ' + data['last_name']
         else:
             full_name = 'Account'
         authenticated = True
@@ -226,15 +251,17 @@ def rides(request):
             "passenger_rides": passenger_rides
         })
     else:
-        return HttpResponse(response.content)
-        next_url = '/?next=' + request.path
-        return redirect(next_url)
+        return redirect('error', message='Could not find details for rides')
+
 
 
 @csrf_protect
 @never_cache
 @require_http_methods(["GET", "POST"])
 def create_ride(request):
+    if 'email' not in request.session or 'authenticator' not in request.session:
+        return redirect('index')
+
     user_id = request.session['user_id']
     context = {}
     if request.method == "POST":
@@ -274,16 +301,9 @@ def create_ride(request):
                 context['data'] = data
                 return redirect("ride_detail", int(ride_id))
             else:
-                context['message'] = "Request Failed"
-                context['message_details'] = response.text
-                return render(request, "error.html", context)
+                return redirect('error', message='Could not find details for user')
         else:
-            context['message'] = "Invalid Form Submission"
-            context['message_details'] = "Open Seats: {}\nDeparture:{}".format(
-                request.POST['open_seats'],
-                request.POST['departure'],
-            )
-            return render(request, "error.html", context)
+            return redirect('error', message='Invalid Form Submission')
     create_ride_form = CreateRideForm()
     context['create_ride_form'] = create_ride_form
     return render(request, "create_ride.html", context)

@@ -31,8 +31,16 @@ def user(request, id):
         try:
             user = UserProfile.objects.get(pk=id)
             # rides = user.Ride_set.all()
-            data = {'rating': str(user.rating), 'school': user.school, 'last_name': user.last_name, 'first_name':
-                    user.first_name, 'email': user.email, 'number': user.phone, 'id': str(id), 'status': str(HTTP_200_OK)}
+            data = {
+                'rating': str(user.rating),
+                'school': user.school,
+                'last_name': user.last_name,
+                'first_name': user.first_name,
+                'email': user.email,
+                'number': user.phone,
+                'id': str(id),
+                'status': str(HTTP_200_OK)
+            }
             return JsonResponse(data, status=HTTP_200_OK)
         except UserProfile.DoesNotExist:
             data = {
@@ -77,23 +85,50 @@ def authenticate_user(request):
     email = data['email']
     password = data['password']
     user = UserProfile.objects.get(email=email)
+    if user.password == password:
+        # handle case where user is already authenticated
+        try:
+            auth = UserAuthenticator.objects.get(user=user)
+            # not expired
+            one_day_old = datetime.datetime.now() - datetime.timedelta(days=1)
+            one_day_old = one_day_old.replace(tzinfo=None)
+            actual = auth.date_created
+            actual = actual.replace(tzinfo=None)
+            if actual > one_day_old:
+                return JsonResponse(
+                    {
+                        'message': 'user authenticated',
+                        'user_id': user.id,
+                        'email': user.email,
+                        'authenticator': auth.authenticator,
+                        'status': str(HTTP_202_ACCEPTED)
+                    },
+                    status=HTTP_202_ACCEPTED
+                )
+            else:
+                auth.delete()
+        except django.core.exceptions.ObjectDoesNotExist:
+            pass
 
-    auth = UserAuthenticator(
-        user=user,
-        date_created=datetime.datetime.now(),
-        authenticator=create_authenticator_string()
-    )
-    auth.save()
-    return JsonResponse(
-        {
-            'message': 'user authenticated',
-            'user_id': user.id,
-            'email': user.email,
-            'authenticator': auth.authenticator,
-            'status': str(HTTP_202_ACCEPTED)
-        },
-        status=HTTP_202_ACCEPTED
-    )
+        # new authenticator
+        auth = UserAuthenticator(
+            user=user,
+            date_created=datetime.datetime.now(),
+            authenticator=create_authenticator_string()
+        )
+        auth.save()
+        return JsonResponse(
+            {
+                'message': 'user authenticated',
+                'user_id': user.id,
+                'email': user.email,
+                'authenticator': auth.authenticator,
+                'status': str(HTTP_202_ACCEPTED)
+            },
+            status=HTTP_202_ACCEPTED
+        )
+
+    return JsonResponse({"message": "User not Authenticated", "status": str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
 
 
 def create_authenticator_string():
@@ -132,15 +167,36 @@ def verify_authenticator(request):
         if actual > one_day_old:
             return JsonResponse({"message": "User Authenticated", "status": str(HTTP_202_ACCEPTED)}, status=HTTP_202_ACCEPTED)
         else:
-            raise Exception('time out of wack')
+            auth.delete()
             return JsonResponse({"message": "User not Authenticated", "status": str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
     except django.core.exceptions.ObjectDoesNotExist:
-        raise Exception('no exist' + data['authenticator'] + ':::::::::::' + data['email'])
+        raise Exception(
+            'no exist' + data['authenticator'] + ':::::::::::' + data['email'])
         return JsonResponse({"message": "User not Authenticated", "status": str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
     except django.core.exceptions.MultipleObjectsReturned:
         # todo: unauthenticate all UserAuthenticator models that have
         # authenticator==data['authenticator']
         return JsonResponse({"message": "User not Authenticated", "status": str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def unauthenticate(request):
+    """
+    POST http://models:8000/api/v1/accounts/unauthenticate/
+    """
+    data = json.loads(request.body.decode("utf-8"))
+    # exists
+    auth = UserAuthenticator.objects.get(
+        authenticator=data['authenticator'])
+    user_via_email = UserProfile.objects.get(email=data['email'])
+
+    # match
+    if auth.user.id is not user_via_email.id:
+        return JsonResponse({"message": "Invalid Authenticator for email ", "status": str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
+
+    auth.delete()
+    return JsonResponse({"message": "User Unauthenticated", "status": str(HTTP_200_OK)}, status=HTTP_200_OK)
 
 
 @csrf_exempt
