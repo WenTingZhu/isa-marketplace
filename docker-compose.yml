@@ -8,7 +8,7 @@ mysql:
     MYSQL_ROOT_PASSWORD: r00tp455w0rd
    container_name: mysql
 models:
-   image: tp33/django:1.2
+   image: tp33/django:1.3
    links:
      - mysql:db
    volumes:
@@ -37,3 +37,15 @@ frontend:
      - "8002:8000"
    command: python manage.py runmodwsgi --reload-on-changes
    container_name: frontend
+kafka:
+   image: spotify/kafka
+   container_name: kafka
+   environment:
+      ADVERTISED_HOST: kafka
+      ADVERTISED_PORT: 9092
+   hostname: kafka
+es:
+   image: elasticsearch:2.0
+   container_name: es
+   ports:
+      - "9200:9200"
