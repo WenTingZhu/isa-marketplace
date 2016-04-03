@@ -196,8 +196,6 @@ def create_account(request):
     else:
         return JsonResponse({'message': str(resp.content)}, status=HTTP_401_UNAUTHORIZED)
 
-
-# 
 # def add_index_to_elastic_search(ride_id, open_seats, departure, status, dropOffLocation_name, dropOffLocation_address, dropOffLocation_city, dropOffLocation_state, dropOffLocation_zipcode):
 #     """
 #     this function adds an index to elastic search.
@@ -238,9 +236,6 @@ def create_account(request):
 # def submit_kafka_job(job):
 #     producer = KafkaProducer(bootstrap_servers='kafka:9092')
 #     new_ride = {'title': 'Used MacbookAir 13"', 'description': 'This is a used Macbook Air in great condition', 'id':42}
-#
-
-
 
 
 
