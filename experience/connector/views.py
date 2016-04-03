@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_protect, csrf_exempt
 import requests
 from connector.status_codes import *
 from elasticsearch import Elasticsearch
-from kafka import KafkaProducer
+# from kafka import KafkaProducer
 
 @csrf_exempt
 @require_http_methods(["GET"])
@@ -198,46 +198,46 @@ def create_account(request):
 
 
 
-def add_index_to_elastic_search(ride_id, open_seats, departure, status, dropOffLocation_name, dropOffLocation_address, dropOffLocation_city, dropOffLocation_state, dropOffLocation_zipcode):
-    """
-    this function adds an index to elastic search.
-    It creates a job and adds that to the kafka queue
-    """
-    es = Elasticsearch(['es'])
-    # these are the things that a user will likely use to search for a ride
-    new_ride = {
-        'ride_id':ride_id,
-        'open_seats':open_seats,
-        'departure': departure,
-        'status':status,
-        'dropoffLocation_name': dropoffLocation_name,
-        'dropOffLocation_address':dropOffLocation_address,
-        'dropOffLocation_city':dropOffLocation_city,
-        'dropOffLocation_state':dropOffLocation_state,
-        'dropOffLocation_zipcode': dropOffLocation_zipcode,
-    }
-    es.index(
-        'ride_index',
-        doc_type='ride',
-        id=new_ride['ride_id'],
-        body=new_ride
-    )
-    es.indices.refresh(index="ride_index")
-    query = {
-        'query': {
-            'query_string': {
-                'query': 'chantilly'
-                }
-            },
-            'size': 10
-        }
-    es.search(index='ride_index', body=query)
-
-
-
-def submit_kafka_job(job):
-    producer = KafkaProducer(bootstrap_servers='kafka:9092')
-    new_ride = {'title': 'Used MacbookAir 13"', 'description': 'This is a used Macbook Air in great condition', 'id':42}
+# def add_index_to_elastic_search(ride_id, open_seats, departure, status, dropOffLocation_name, dropOffLocation_address, dropOffLocation_city, dropOffLocation_state, dropOffLocation_zipcode):
+#     """
+#     this function adds an index to elastic search.
+#     It creates a job and adds that to the kafka queue
+#     """
+#     es = Elasticsearch(['es'])
+#     # these are the things that a user will likely use to search for a ride
+#     new_ride = {
+#         'ride_id':ride_id,
+#         'open_seats':open_seats,
+#         'departure': departure,
+#         'status':status,
+#         'dropoffLocation_name': dropoffLocation_name,
+#         'dropOffLocation_address':dropOffLocation_address,
+#         'dropOffLocation_city':dropOffLocation_city,
+#         'dropOffLocation_state':dropOffLocation_state,
+#         'dropOffLocation_zipcode': dropOffLocation_zipcode,
+#     }
+#     es.index(
+#         'ride_index',
+#         doc_type='ride',
+#         id=new_ride['ride_id'],
+#         body=new_ride
+#     )
+#     es.indices.refresh(index="ride_index")
+#     query = {
+#         'query': {
+#             'query_string': {
+#                 'query': 'chantilly'
+#                 }
+#             },
+#             'size': 10
+#         }
+#     es.search(index='ride_index', body=query)
+#
+#
+#
+# def submit_kafka_job(job):
+#     producer = KafkaProducer(bootstrap_servers='kafka:9092')
+#     new_ride = {'title': 'Used MacbookAir 13"', 'description': 'This is a used Macbook Air in great condition', 'id':42}
 
 
 
