@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # this file will clean up your local repo by
 # 1) removing all  migrations
 # 2) removing all cache
