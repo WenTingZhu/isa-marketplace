@@ -92,7 +92,9 @@ def create_user(request):
 @require_http_methods(['GET'])
 def error(request):
     msg = request.GET.get('message','Internal Server Error')
-    return render(request, 'error.html', {'message':msg})
+    signup_form = SignupForm()
+    login_form = LoginForm()
+    return render(request, 'error.html', {'message':msg, 'signup_form': signup_form, 'login_form': login_form})
 
 @sensitive_post_parameters()
 @csrf_protect
