@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_protect, csrf_exempt
 import requests
 from connector.status_codes import *
 from elasticsearch import Elasticsearch
-# from kafka import KafkaProducer
+from kafka import KafkaProducer
 
 @csrf_exempt
 @require_http_methods(["GET"])
