@@ -33,3 +33,6 @@ class CreateRideForm(forms.Form):
         attrs={'class': 'form-control', 'placeholder': '1', 'style': 'width: 250px; float: right;'}))
     departure = forms.DateTimeField(label="Departure", input_formats=['%Y-%m-%dT%H:%M'], widget=HTMLDateTimeInput(
         attrs={'class': 'form-control', 'style': 'width: 250px; float: right;'}))
+
+class SearchForm(forms.Form):
+    query = forms.CharField(label="Query", max_length=100, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Search for Rides', 'style': 'width: 150px;'}))

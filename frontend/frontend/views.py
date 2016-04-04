@@ -30,12 +30,14 @@ def index(request):
 
     signup_form = SignupForm()
     login_form = LoginForm()
+    search_form = SearchForm()
 
     return render(request, "index.html", {
         "invalid_login": invalid_login,
         "authenticated": False,
         "signup_form": signup_form,
         "login_form": login_form,
+        "search_form": search_form,
         "redirect_possible": 'next' in request.GET
     })
 
