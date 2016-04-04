@@ -1,8 +1,23 @@
 #!/bin/bash
+# usage: bash start.sh
 
 # clean the repo so no migration issues occur
 echo "Cleaning your local repository"
 bash ./clean.sh
+
+# usage: bash start.sh --reset
+# these lines can be used to remove all images and containers thus totally resetting docker
+if [ "$#" -eq  "1" ]; then
+    if [ "$1" == "--reset" ]; then
+      sudo docker images | awk 'NR > 1 {print "sudo docker rmi -f "$3}' | sh
+      sudo docker-compose stop
+      sudo docker-compose rm
+    fi
+fi
+
+
+
+
 
 # note: this section can be removed if the files are eventually made different. Right now, they are the same so its easier to keep them consistent using these copy commands
 # copy paste requirements.txt to all required containers
@@ -19,10 +34,10 @@ cp Dockerfile frontend/Dockerfile
 echo "Running mysql container in the background"
 # run mysql in the background
 sudo docker-compose up mysql &
-sleep_time=45
-echo "Sleeping for $sleep_time seconds"
+sleeptime=90
+echo "Sleeping for $sleeptime seconds"
 # wait for mysql to work. hopefully this is long enough, but not too long
-sleep $sleep_time
+sleep $sleeptime
 echo "Running the remaining containers"
 # make the rest work
 sudo docker-compose up models experience frontend kafka batch es

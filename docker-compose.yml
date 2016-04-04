@@ -18,17 +18,17 @@ models:
    command: bash -c "python manage.py makemigrations accounts && python manage.py makemigrations ride && python manage.py migrate && python manage.py runmodwsgi --reload-on-changes"
    container_name: models
 experience:
-   build: ./experience/
-   links:
-     - models:models
-     - kafka:kafka
-     - es:es
-   volumes:
-     - ./experience:/code
-   ports:
-     - "8001:8000"
-   command: python manage.py runmodwsgi --reload-on-changes
-   container_name: experience
+  build: ./experience/
+  links:
+    - models:models
+    - kafka:kafka
+    - es:es
+  volumes:
+    - ./experience:/code
+  ports:
+    - "8001:8000"
+  command: python manage.py runmodwsgi --reload-on-changes
+  container_name: experience
 frontend:
    build: ./frontend/
    links:
