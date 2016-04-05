@@ -138,7 +138,6 @@ def ride_request(request, id):
         return JsonResponse(data, status=HTTP_404_NOT_FOUND)
 
 
-
 @csrf_exempt
 @require_http_methods(["PUT"])
 def create_ride_request(request):
@@ -205,7 +204,7 @@ def create_dropoff_location(request):
     return JsonResponse(dataresult, status=HTTP_201_CREATED)
 
 
-# SERVICES  list
+# SERVICES list
 # GET
 # - driver, open seats, departure time, status
 # POST
