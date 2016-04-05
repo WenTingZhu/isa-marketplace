@@ -1,9 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-import json
+import json, requests
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
-import requests
 from connector.status_codes import *
 from elasticsearch import Elasticsearch, NotFoundError
 from kafka import KafkaProducer
@@ -149,15 +148,10 @@ def create_ride(request):
         url, json={"driver": data['driver'], "open_seats": data['open_seats'], "departure": data['departure']})
     if resp.status_code == HTTP_201_CREATED:
         new_ride = resp.json()
-<<<<<<< HEAD
-=======
         add_index_to_elastic_search(new_ride['id'])
->>>>>>> ed7fa5bf86a5b7bccaa7a2458f6a17915887129b
-        return JsonResponse({'message': 'Ride Created', 'ride_id': new_ride['id'], 'open_seats': new_ride['open_seats'], 'departure': new_ride['departure']}, status=HTTP_201_CREATED)
-    else:
-        return JsonResponse(resp.content)
-        message = resp.text
-        return JsonResponse({'message': message}, status=HTTP_401_UNAUTHORIZED)
+          return JsonResponse({'message': 'Ride Created', 'ride_id': new_ride['id'], 'open_seats': new_ride['open_seats'], 'departure': new_ride['departure']}, status=HTTP_201_CREATED)
+      else:
+          return JsonResponse(resp.content)
 
 
 @csrf_exempt
@@ -207,8 +201,7 @@ def create_account(request):
     else:
         return JsonResponse({'message': str(resp.content)}, status=HTTP_401_UNAUTHORIZED)
 
-<<<<<<< HEAD
-=======
+
 def add_index_to_elastic_search(ride_id):
     """
     It creates a CREATE job and adds that to the kafka queue
@@ -219,7 +212,7 @@ def add_index_to_elastic_search(ride_id):
         resp = requests.get(url)
         if resp.status_code == HTTP_200_OK:
             data = resp.json()
-            # todo: multiple drop off locations per ride 
+            # todo: multiple drop off locations per ride
             new_ride = {
                 'ride_id':data['ride_id'],
                 'open_seats':data['available_seats'],
@@ -247,7 +240,6 @@ def submit_kafka_job(job, type):
 
     producer.send(kafka_queue, json.dumps(job).encode('utf-8'))
 
->>>>>>> ed7fa5bf86a5b7bccaa7a2458f6a17915887129b
 
 @csrf_exempt
 @require_http_methods(['POST'])

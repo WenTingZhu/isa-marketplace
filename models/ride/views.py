@@ -100,6 +100,7 @@ def delete_ride(request, id):
                 ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
         return JsonResponse(data, status=HTTP_404_NOT_FOUND)
 
+
 @csrf_exempt
 @require_http_methods(["GET"])
 def all_rides(request):
