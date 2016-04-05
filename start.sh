@@ -1,11 +1,11 @@
 #!/bin/bash
 # usage: bash start.sh
+# if previous usage did not work: bash start.sh --reset
 
 # clean the repo so no migration issues occur
 echo "Cleaning your local repository"
 bash ./clean.sh
 
-# usage: bash start.sh --reset
 # these lines can be used to remove all images and containers thus totally resetting docker
 if [ "$#" -eq  "1" ]; then
     if [ "$1" == "--reset" ]; then
@@ -14,9 +14,6 @@ if [ "$#" -eq  "1" ]; then
       sudo docker-compose rm
     fi
 fi
-
-
-
 
 
 # note: this section can be removed if the files are eventually made different. Right now, they are the same so its easier to keep them consistent using these copy commands

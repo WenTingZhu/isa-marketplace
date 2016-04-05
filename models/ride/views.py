@@ -114,37 +114,6 @@ def all_rides(request):
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
 
 
-# @csrf_exempt
-# @require_http_methods(["GET"])
-# def search_rides(request):
-#     """
-#     GET http://models:8000/api/v1/ride/rides/
-#     """
-#     if request.method == 'GET':
-#         try:
-#             # user = UserProfile.objects.get(pk=id)
-#             # rides = Ride.objects.filter(driver=id)
-#             rides = Ride.objects.all()
-#             rides_list = []
-#             for ride in rides:
-#                 driver_ride = {}
-#                 driver_ride["id"] = ride.pk
-#                 driver_ride["driver"] = str(ride.driver)
-#                 driver_ride["available_seats"] = str(ride.openSeats)
-#                 driver_ride["departure"] = str(
-#                     "{:%b %d, %Y %H:%M}".format(ride.departure))
-#                 driver_ride["status"] = str(ride.status)
-#                 rides_list.append(driver_ride)
-#             data = {
-#                 'rides_list': json.dumps(rides_list),
-#                 'status': str(HTTP_200_OK)
-#             }
-#             return JsonResponse(data, status=HTTP_200_OK)
-#         except UserProfile.DoesNotExist:
-#             data = {'message':'No rides found.', 'status': str(HTTP_404_NOT_FOUND)}
-#             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
-
-
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def ride_request(request, id):
@@ -160,7 +129,6 @@ def ride_request(request, id):
         data = {'message': 'ride request with id ' + id +
                 ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
         return JsonResponse(data, status=HTTP_404_NOT_FOUND)
-
 
 
 @csrf_exempt
@@ -229,7 +197,7 @@ def create_dropoff_location(request):
     return JsonResponse(dataresult, status=HTTP_201_CREATED)
 
 
-# SERVICES  list
+# SERVICES list
 # GET
 # - driver, open seats, departure time, status
 # POST
