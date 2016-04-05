@@ -5,6 +5,8 @@
 echo "Cleaning your local repository"
 bash ./clean.sh
 
+sleeptime=30
+
 # usage: bash start.sh --reset
 # these lines can be used to remove all images and containers thus totally resetting docker
 if [ "$#" -eq  "1" ]; then
@@ -12,6 +14,7 @@ if [ "$#" -eq  "1" ]; then
       sudo docker images | awk 'NR > 1 {print "sudo docker rmi -f "$3}' | sh
       sudo docker-compose stop
       sudo docker-compose rm
+      sleeptime=90
     fi
 fi
 
@@ -34,7 +37,7 @@ cp Dockerfile frontend/Dockerfile
 echo "Running mysql container in the background"
 # run mysql in the background
 sudo docker-compose up mysql &
-sleeptime=90
+
 echo "Sleeping for $sleeptime seconds"
 # wait for mysql to work. hopefully this is long enough, but not too long
 sleep $sleeptime

@@ -8,6 +8,13 @@ from connector.status_codes import *
 from elasticsearch import Elasticsearch
 from kafka import KafkaProducer
 
+#kafka job types
+CREATE = 0
+READ = 1
+UPDATE = 2
+DELETE = 3
+
+
 @csrf_exempt
 @require_http_methods(["GET"])
 def home(request):
@@ -196,62 +203,89 @@ def create_account(request):
     else:
         return JsonResponse({'message': str(resp.content)}, status=HTTP_401_UNAUTHORIZED)
 
-# def add_index_to_elastic_search(ride_id, open_seats, departure, status, dropOffLocation_name, dropOffLocation_address, dropOffLocation_city, dropOffLocation_state, dropOffLocation_zipcode):
-#     """
-#     this function adds an index to elastic search.
-#     It creates a job and adds that to the kafka queue
-#     """
-#     es = Elasticsearch(['es'])
-#     # these are the things that a user will likely use to search for a ride
-#     new_ride = {
-#         'ride_id':ride_id,
-#         'open_seats':open_seats,
-#         'departure': departure,
-#         'status':status,
-#         'dropoffLocation_name': dropoffLocation_name,
-#         'dropOffLocation_address':dropOffLocation_address,
-#         'dropOffLocation_city':dropOffLocation_city,
-#         'dropOffLocation_state':dropOffLocation_state,
-#         'dropOffLocation_zipcode': dropOffLocation_zipcode,
-#     }
-#     es.index(
-#         'ride_index',
-#         doc_type='ride',
-#         id=new_ride['ride_id'],
-#         body=new_ride
-#     )
-#     es.indices.refresh(index="ride_index")
-#     query = {
-#         'query': {
-#             'query_string': {
-#                 'query': 'chantilly'
-#                 }
-#             },
-#             'size': 10
-#         }
-#     es.search(index='ride_index', body=query)
-#
-#
-#
-# def submit_kafka_job(job):
-#     producer = KafkaProducer(bootstrap_servers='kafka:9092')
-#     new_ride = {'title': 'Used MacbookAir 13"', 'description': 'This is a used Macbook Air in great condition', 'id':42}
+def add_index_to_elastic_search(ride_id, open_seats, departure, status, dropOffLocation_name, dropOffLocation_address, dropOffLocation_city, dropOffLocation_state, dropOffLocation_zipcode):
+    """
+    It creates a CREATE job and adds that to the kafka queue
+    """
+    # these are the things that a user will likely use to search for a ride
+    new_ride = {
+        'ride_id':ride_id,
+        'open_seats':open_seats,
+        'departure': departure,
+        'status':status,
+        'dropoffLocation_name': dropoffLocation_name,
+        'dropOffLocation_address':dropOffLocation_address,
+        'dropOffLocation_city':dropOffLocation_city,
+        'dropOffLocation_state':dropOffLocation_state,
+        'dropOffLocation_zipcode': dropOffLocation_zipcode,
+    }
+    submit_kafka_job(new_ride, CREATE)
+
+def submit_kafka_job(job, type):
+    producer = KafkaProducer(bootstrap_servers='kafka:9092')
+    if type == CREATE:
+        kafka_queue = 'create-ride-topic'
+    elif type == UPDATE:
+        kafka_queue = 'update-ride-topic'
+    else:
+        kafka_queue = 'delete-ride-topic'
+
+    producer.send(kafka_queue, json.dumps(job).encode('utf-8'))
 
 
 
 
-# @csrf_exempt
-# @require_http_methods(['GET'])
-# def search(request):
-#     data = json.loads(request.body.decode("utf-8"))
-#     search_term = data['search_term']
-#     es.indices.refresh(index="ride_index")
-#     query = {
-#         'query': {
-#             'query_string': {
-#                 'query': 'chantilly'
-#                 }
-#             },
-#             'size': 10
-#         }
-#     es.search(index='ride_index', body=query)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def search(request):
+    # todo: make sure user is authenticated
+    data = json.loads(request.body.decode("utf-8"))
+    search_term = data['search_term']
+    es = Elasticsearch(['es'])
+    es.indices.refresh(index="ride_index")
+    query = {
+        'query': {
+            'query_string': {
+                'query': search_term
+                }
+            },
+            'size': 10
+        }
+    results = es.search(index='ride_index', body=query)
+    out = []
+    for result in results['hits']['hits']:
+        out.append(result['_source'])
+
+    return JsonResponse({
+        'results': ,
+    }, status=HTTP_201_CREATED)
+
+
+    # {
+    #     'timed_out': False,
+    #     'hits': {
+    #         'total': 1,
+    #         'hits': [
+    #             {
+    #                 '_score': 0.10848885,
+    #                 '_index': 'listing_index',
+    #                 '_source': {
+    #                     'id': 42,
+    #                     'description': 'This is a used Macbook Air in great condition',
+    #                     'title': 'Used MacbookAir 13"'
+    #                     },
+    #                 '_id': '42',
+    #                 '_type': 'listing'
+    #             }
+    #         ],
+    #         'max_score': 0.10848885
+    #     },
+    #     '_shards': {
+    #         'successful': 5,
+    #         'total': 5,
+    #         'failed': 0
+    #         },
+    #     'took': 21
+    # }
