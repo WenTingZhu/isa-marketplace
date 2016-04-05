@@ -149,6 +149,10 @@ def create_ride(request):
         url, json={"driver": data['driver'], "open_seats": data['open_seats'], "departure": data['departure']})
     if resp.status_code == HTTP_201_CREATED:
         new_ride = resp.json()
+<<<<<<< HEAD
+=======
+        add_index_to_elastic_search(new_ride['id'])
+>>>>>>> ed7fa5bf86a5b7bccaa7a2458f6a17915887129b
         return JsonResponse({'message': 'Ride Created', 'ride_id': new_ride['id'], 'open_seats': new_ride['open_seats'], 'departure': new_ride['departure']}, status=HTTP_201_CREATED)
     else:
         return JsonResponse(resp.content)
@@ -203,6 +207,47 @@ def create_account(request):
     else:
         return JsonResponse({'message': str(resp.content)}, status=HTTP_401_UNAUTHORIZED)
 
+<<<<<<< HEAD
+=======
+def add_index_to_elastic_search(ride_id):
+    """
+    It creates a CREATE job and adds that to the kafka queue
+    """
+    # these are the things that a user will likely use to search for a ride
+    try:
+        url = 'http://models:8000/api/v1/ride/' + ride_id + '/'
+        resp = requests.get(url)
+        if resp.status_code == HTTP_200_OK:
+            data = resp.json()
+            # todo: multiple drop off locations per ride 
+            new_ride = {
+                'ride_id':data['ride_id'],
+                'open_seats':data['available_seats'],
+                'departure': data['departure'],
+                'status':data['ride_status'],
+                'dropoffLocation_name': dropoffLocation_name,
+                'dropOffLocation_address':dropOffLocation_address,
+                'dropOffLocation_city':dropOffLocation_city,
+                'dropOffLocation_state':dropOffLocation_state,
+                'dropOffLocation_zipcode': dropOffLocation_zipcode,
+            }
+            submit_kafka_job(new_ride, CREATE)
+    except:
+        pass
+
+
+def submit_kafka_job(job, type):
+    producer = KafkaProducer(bootstrap_servers='kafka:9092')
+    if type == CREATE:
+        kafka_queue = 'create-ride-topic'
+    elif type == UPDATE:
+        kafka_queue = 'update-ride-topic'
+    else:
+        kafka_queue = 'delete-ride-topic'
+
+    producer.send(kafka_queue, json.dumps(job).encode('utf-8'))
+
+>>>>>>> ed7fa5bf86a5b7bccaa7a2458f6a17915887129b
 
 @csrf_exempt
 @require_http_methods(['POST'])
@@ -210,6 +255,7 @@ def search(request):
     # todo: make sure user is authenticated
     data = json.loads(request.body.decode("utf-8"))
     search_query = data['query']
+
     es = Elasticsearch(['es'])
     try:
         es.indices.refresh(index="ride_index")
