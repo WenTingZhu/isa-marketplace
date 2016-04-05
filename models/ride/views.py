@@ -21,14 +21,24 @@ def ride(request, id):
             driver = UserProfile.objects.get(pk=ride.driver.pk)
             passengers = ride.passenger.all()
             dropoffLocations = ride.dropoffLocation.all()
+            dropoffLocations_serialized = []
+            for dropoffLocation in dropOffLocations:
+                dropoffLocations_serialized.append({
+                    'name':dropoffLocation.name,
+                    'address':dropoffLocation.address,
+                    'city':dropoffLocation.city,
+                    'state':dropoffLocation.state,
+                    'zipcode':dropoffLocation.zipcode,
+                })
             data = {
                 'ride_status': str(ride.status),
-                'dropOffLocations': str(dropoffLocations),
+                'dropOffLocations': dropoffLocations_serialized,
                 'passengers': str(passengers),
                 'departure': str("{:%b %d, %Y %H:%M}".format(ride.departure)),
-                'available_seats': str(ride.openSeats), 
+                'available_seats': str(ride.openSeats),
                 'driver': str(driver),
-                'status': str(HTTP_200_OK)
+                'status': str(HTTP_200_OK),
+                'ride_id': id,
             }
             return JsonResponse(data, status=HTTP_200_OK)
         except Ride.DoesNotExist:
