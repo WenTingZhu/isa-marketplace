@@ -90,6 +90,7 @@ def create_user(request):
             return redirect('error')
     return redirect('error')
 
+
 @csrf_protect
 @require_http_methods(['GET'])
 def error(request):
@@ -98,6 +99,7 @@ def error(request):
     login_form = LoginForm()
     search_form = SearchForm()
     return render(request, 'error.html', {'message':msg, 'signup_form': signup_form, 'login_form': login_form, 'search_form': search_form})
+
 
 @sensitive_post_parameters()
 @csrf_protect
@@ -208,7 +210,6 @@ def ride_detail(request, id):
         return redirect('error')
 
 
-
 def rides(request):
     if 'email' not in request.session or 'authenticator' not in request.session:
         return redirect('index')
@@ -242,7 +243,6 @@ def rides(request):
         })
     else:
         return redirect('error')
-
 
 
 @csrf_protect
@@ -299,9 +299,11 @@ def create_ride(request):
     context['search_form'] = SearchForm()
     return render(request, "create_ride.html", context)
 
+
 @csrf_protect
 @never_cache
 @require_http_methods(["POST"])
+# Testing only
 def search(request):
     form = SearchForm(data=request.POST)
     if form.is_valid():
@@ -313,6 +315,7 @@ def search(request):
     else:
         return HttpResponse('FAILED' + str(resp.content))
         # todo: give some error message to user without breaking page
+
 
 @csrf_protect
 @never_cache

@@ -1,6 +1,7 @@
 #!/bin/bash
 # usage: bash start.sh
 # if you want to reset all images and containers and then run: bash start.sh --reset
+# If cannot modify files: chmod -R 777 ./*
 
 
 # clean the repo so no migration issues occur

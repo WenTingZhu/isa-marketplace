@@ -149,18 +149,6 @@ def create_ride(request):
         url, json={"driver": data['driver'], "open_seats": data['open_seats'], "departure": data['departure']})
     if resp.status_code == HTTP_201_CREATED:
         new_ride = resp.json()
-        add_index_to_elastic_search(
-            ride_id = new_ride['id'],
-            open_seats = new_ride['open_seats'],
-            departure = new_ride['departure'],
-            status = , 
-            dropOffLocation_name = ,
-            dropOffLocation_address = ,
-            dropOffLocation_city = ,
-            dropOffLocation_state = ,
-            dropOffLocation_zipcode =
-            )
-
         return JsonResponse({'message': 'Ride Created', 'ride_id': new_ride['id'], 'open_seats': new_ride['open_seats'], 'departure': new_ride['departure']}, status=HTTP_201_CREATED)
     else:
         return JsonResponse(resp.content)
@@ -215,39 +203,6 @@ def create_account(request):
     else:
         return JsonResponse({'message': str(resp.content)}, status=HTTP_401_UNAUTHORIZED)
 
-def add_index_to_elastic_search(ride_id, open_seats, departure, status, dropOffLocation_name, dropOffLocation_address, dropOffLocation_city, dropOffLocation_state, dropOffLocation_zipcode):
-    """
-    It creates a CREATE job and adds that to the kafka queue
-    """
-    # these are the things that a user will likely use to search for a ride
-    new_ride = {
-        'ride_id':ride_id,
-        'open_seats':open_seats,
-        'departure': departure,
-        'status':status,
-        'dropoffLocation_name': dropoffLocation_name,
-        'dropOffLocation_address':dropOffLocation_address,
-        'dropOffLocation_city':dropOffLocation_city,
-        'dropOffLocation_state':dropOffLocation_state,
-        'dropOffLocation_zipcode': dropOffLocation_zipcode,
-    }
-    submit_kafka_job(new_ride, CREATE)
-
-def submit_kafka_job(job, type):
-    producer = KafkaProducer(bootstrap_servers='kafka:9092')
-    if type == CREATE:
-        kafka_queue = 'create-ride-topic'
-    elif type == UPDATE:
-        kafka_queue = 'update-ride-topic'
-    else:
-        kafka_queue = 'delete-ride-topic'
-
-    producer.send(kafka_queue, json.dumps(job).encode('utf-8'))
-
-
-
-
-
 
 @csrf_exempt
 @require_http_methods(['POST'])
@@ -258,7 +213,6 @@ def search(request):
     es = Elasticsearch(['es'])
     try:
         es.indices.refresh(index="ride_index")
-
         query = {
             'query': {
                 'query_string': {
@@ -277,30 +231,61 @@ def search(request):
         'results': out,
     }, status=HTTP_200_OK)
 
+# Example return value
+# {
+#     'timed_out': False,
+#     'hits': {
+#         'total': 1,
+#         'hits': [
+#             {
+#                 '_score': 0.10848885,
+#                 '_index': 'listing_index',
+#                 '_source': {
+#                     'id': 42,
+#                     'description': 'This is a used Macbook Air in great condition',
+#                     'title': 'Used MacbookAir 13"'
+#                     },
+#                 '_id': '42',
+#                 '_type': 'listing'
+#             }
+#         ],
+#         'max_score': 0.10848885
+#     },
+#     '_shards': {
+#         'successful': 5,
+#         'total': 5,
+#         'failed': 0
+#         },
+#     'took': 21
+# }
 
-    # {
-    #     'timed_out': False,
-    #     'hits': {
-    #         'total': 1,
-    #         'hits': [
-    #             {
-    #                 '_score': 0.10848885,
-    #                 '_index': 'listing_index',
-    #                 '_source': {
-    #                     'id': 42,
-    #                     'description': 'This is a used Macbook Air in great condition',
-    #                     'title': 'Used MacbookAir 13"'
-    #                     },
-    #                 '_id': '42',
-    #                 '_type': 'listing'
-    #             }
-    #         ],
-    #         'max_score': 0.10848885
-    #     },
-    #     '_shards': {
-    #         'successful': 5,
-    #         'total': 5,
-    #         'failed': 0
-    #         },
-    #     'took': 21
-    # }
+
+def add_index_to_elastic_search(ride_id, open_seats, departure, status, dropOffLocation_name, dropOffLocation_address, dropOffLocation_city, dropOffLocation_state, dropOffLocation_zipcode):
+    """
+    It creates a CREATE job and adds that to the kafka queue
+    """
+    # these are the things that a user will likely use to search for a ride
+    new_ride = {
+        'ride_id':ride_id,
+        'open_seats':open_seats,
+        'departure': departure,
+        'status':status,
+        'dropoffLocation_name': dropoffLocation_name,
+        'dropOffLocation_address':dropOffLocation_address,
+        'dropOffLocation_city':dropOffLocation_city,
+        'dropOffLocation_state':dropOffLocation_state,
+        'dropOffLocation_zipcode': dropOffLocation_zipcode,
+    }
+    submit_kafka_job(new_ride, CREATE)
+
+
+def submit_kafka_job(job, type):
+    producer = KafkaProducer(bootstrap_servers='kafka:9092')
+    if type == CREATE:
+        kafka_queue = 'create-ride-topic'
+    elif type == UPDATE:
+        kafka_queue = 'update-ride-topic'
+    else:
+        kafka_queue = 'delete-ride-topic'
+
+    producer.send(kafka_queue, json.dumps(job).encode('utf-8'))
