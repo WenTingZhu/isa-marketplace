@@ -36,8 +36,8 @@
         {% block navbar_content %}
         <!-- Default content -->
         <li>
-          <form role="form" action="" method="POST" style="padding-top: 7px;">
-            {{ csrf_protect }}
+          <form role="form" action="{% url 'search_results' %}" method="POST" style="padding-top: 7px;">
+            {% csrf_token %}
             <div class="input-group">
               {{ search_form.query }}
               <span class="input-group-btn">

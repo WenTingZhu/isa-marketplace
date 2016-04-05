@@ -96,7 +96,8 @@ def error(request):
     msg = request.GET.get('message','Internal Server Error')
     signup_form = SignupForm()
     login_form = LoginForm()
-    return render(request, 'error.html', {'message':msg, 'signup_form': signup_form, 'login_form': login_form})
+    search_form = SearchForm()
+    return render(request, 'error.html', {'message':msg, 'signup_form': signup_form, 'login_form': login_form, 'search_form': search_form})
 
 @sensitive_post_parameters()
 @csrf_protect
@@ -173,6 +174,7 @@ def dashboard(request):
             data = response.json()['data']
             all_rides = json.loads(data['rides_list'])
             context['all_rides'] = all_rides
+        context['search_form'] = SearchForm()
         return render(request, "dashboard.html", context)
     else:
         return redirect('error')
@@ -200,6 +202,7 @@ def ride_detail(request, id):
         else:
             context['full_name'] = 'Account'
         context['authenticated'] = True
+        context['search_form'] = SearchForm()
         return render(request, "ride-details.html", context)
     else:
         return redirect('error')
@@ -234,7 +237,8 @@ def rides(request):
             'first_name': resp.json()['first_name'],
             'authenticated': authenticated,
             "driver_rides": driver_rides,
-            "passenger_rides": passenger_rides
+            "passenger_rides": passenger_rides,
+            "search_form": SearchForm()
         })
     else:
         return redirect('error')
@@ -292,4 +296,24 @@ def create_ride(request):
             return redirect('error')
     create_ride_form = CreateRideForm()
     context['create_ride_form'] = create_ride_form
+    context['search_form'] = SearchForm()
     return render(request, "create_ride.html", context)
+
+@csrf_protect
+@never_cache
+@require_http_methods(["POST"])
+def search_results(request):
+    context = {}
+    if request.method == "POST":
+        form = SearchForm(data=request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            context['query'] = data['query']
+            context['search_form'] = SearchForm()
+            return render(request, "results.html", context)
+        else:
+            return HttpResponse('2')
+            return redirect('error')
+    else:
+        return HttpResponse('6')
+        return redirect('error')
