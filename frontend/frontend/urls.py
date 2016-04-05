@@ -13,4 +13,6 @@ urlpatterns = [
     url(r'^create_ride/', 'frontend.views.create_ride', name="create_ride"),
     url(r'^create_user/', 'frontend.views.create_user', name="create_user"),
     url(r'^error/', 'frontend.views.error', name="error"),
+    url(r'^search/', 'frontend.views.search', name="search"),
+
 ]

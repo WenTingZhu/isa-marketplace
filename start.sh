@@ -1,5 +1,6 @@
 #!/bin/bash
 # usage: bash start.sh
+# if you want to reset all images and containers and then run: bash start.sh --reset
 
 # clean the repo so no migration issues occur
 echo "Cleaning your local repository"
@@ -7,7 +8,7 @@ bash ./clean.sh
 
 sleeptime=30
 
-# usage: bash start.sh --reset
+
 # these lines can be used to remove all images and containers thus totally resetting docker
 if [ "$#" -eq  "1" ]; then
     if [ "$1" == "--reset" ]; then

@@ -293,3 +293,20 @@ def create_ride(request):
     create_ride_form = CreateRideForm()
     context['create_ride_form'] = create_ride_form
     return render(request, "create_ride.html", context)
+
+
+
+@csrf_protect
+@never_cache
+@require_http_methods(["POST"])
+def search(request):
+    form = SearchForm(data=request.POST)
+    if form.is_valid():
+        data = form.cleaned_data
+    url = experience + 'search/'
+    resp = requests.post(url, json={'query': data['query']})
+    if resp.status_code == HTTP_200_OK:
+        return HttpResponse(resp.content)
+    else:
+        return HttpResponse('FAILED' + str(resp.content))
+        # todo: give some error message to user without breaking page

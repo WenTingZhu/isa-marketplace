@@ -23,7 +23,7 @@ while True:
         for message in consumer:
             new_ride = json.loads((message.value).decode('utf-8'))
             create_new_ride(new_ride)
-
+        
         # todo: handle other topics (queues)
 
 

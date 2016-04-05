@@ -5,7 +5,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 import requests
 from connector.status_codes import *
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, NotFoundError
 from kafka import KafkaProducer
 
 #kafka job types
@@ -149,6 +149,18 @@ def create_ride(request):
         url, json={"driver": data['driver'], "open_seats": data['open_seats'], "departure": data['departure']})
     if resp.status_code == HTTP_201_CREATED:
         new_ride = resp.json()
+        add_index_to_elastic_search(
+            ride_id = new_ride['id'],
+            open_seats = new_ride['open_seats'],
+            departure = new_ride['departure'],
+            status = , 
+            dropOffLocation_name = ,
+            dropOffLocation_address = ,
+            dropOffLocation_city = ,
+            dropOffLocation_state = ,
+            dropOffLocation_zipcode =
+            )
+
         return JsonResponse({'message': 'Ride Created', 'ride_id': new_ride['id'], 'open_seats': new_ride['open_seats'], 'departure': new_ride['departure']}, status=HTTP_201_CREATED)
     else:
         return JsonResponse(resp.content)
@@ -238,29 +250,32 @@ def submit_kafka_job(job, type):
 
 
 @csrf_exempt
-@require_http_methods(['GET'])
+@require_http_methods(['POST'])
 def search(request):
     # todo: make sure user is authenticated
     data = json.loads(request.body.decode("utf-8"))
-    search_term = data['search_term']
+    search_query = data['query']
     es = Elasticsearch(['es'])
-    es.indices.refresh(index="ride_index")
-    query = {
-        'query': {
-            'query_string': {
-                'query': search_term
-                }
-            },
-            'size': 10
-        }
-    results = es.search(index='ride_index', body=query)
-    out = []
-    for result in results['hits']['hits']:
-        out.append(result['_source'])
+    try:
+        es.indices.refresh(index="ride_index")
 
+        query = {
+            'query': {
+                'query_string': {
+                    'query': search_query
+                    }
+                },
+                'size': 10
+            }
+        results = es.search(index='ride_index', body=query)
+        out = []
+        for result in results['hits']['hits']:
+            out.append(result['_source'])
+    except NotFoundError:
+        out = []
     return JsonResponse({
-        'results': ,
-    }, status=HTTP_201_CREATED)
+        'results': out,
+    }, status=HTTP_200_OK)
 
 
     # {

@@ -19,4 +19,5 @@ urlpatterns = [
         'connector.views.create_account', name='create_account'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^user_detail/(\d+)/$', 'connector.views.user_detail', name='user_detail'),
+    url(r'^search/', 'connector.views.search', name='search')
 ]
