@@ -1,9 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-import json
+import json, requests
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
-import requests
 from connector.status_codes import *
 from elasticsearch import Elasticsearch, NotFoundError
 from kafka import KafkaProducer
@@ -155,6 +154,8 @@ def create_ride(request):
         message = resp.text
         return JsonResponse({'message': message}, status=HTTP_401_UNAUTHORIZED)
 
+        return JsonResponse(resp.content)
+
 
 @csrf_exempt
 @require_http_methods(['GET'])
@@ -213,7 +214,6 @@ def add_index_to_elastic_search(ride_id):
         resp = requests.get(url)
         if resp.status_code == HTTP_200_OK:
             data = resp.json()
-
             new_ride = {
                 'ride_id':data['ride_id'],
                 'open_seats':data['available_seats'],

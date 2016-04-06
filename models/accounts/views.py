@@ -1,23 +1,20 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-import json
+import json, os, hmac, datetime
 from django.views.decorators.http import require_http_methods
 from accounts.status_codes import *
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 # from django.contrib.auth.models import User
 # from django.contrib.auth import authenticate
-from accounts.models import UserProfile, UserAuthenticator
-from ride.models import Ride
 from django.db.models import Q
 from datetime import datetime
 from django.utils import formats
 import django.contrib.auth.hashers
-import os
-import hmac
+from django.contrib.auth.hashers import check_password
 # import django settings file
 from rideshare import settings
-from django.contrib.auth.hashers import check_password
-import datetime
+from accounts.models import UserProfile, UserAuthenticator
+from ride.models import Ride
 
 
 # GET or UPDATE user
