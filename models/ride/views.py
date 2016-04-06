@@ -22,13 +22,13 @@ def ride(request, id):
             passengers = ride.passenger.all()
             dropoffLocations = ride.dropoffLocation.all()
             dropoffLocations_serialized = []
-            for dropoffLocation in dropOffLocations:
+            for dropoffLocation in dropoffLocations:
                 dropoffLocations_serialized.append({
-                    'name':dropoffLocation.name,
-                    'address':dropoffLocation.address,
-                    'city':dropoffLocation.city,
-                    'state':dropoffLocation.state,
-                    'zipcode':dropoffLocation.zipcode,
+                    'name': dropoffLocation.name,
+                    'address': dropoffLocation.address,
+                    'city': dropoffLocation.city,
+                    'state': dropoffLocation.state,
+                    'zipcode': dropoffLocation.zipcode,
                 })
             data = {
                 'ride_status': str(ride.status),
@@ -42,8 +42,10 @@ def ride(request, id):
             }
             return JsonResponse(data, status=HTTP_200_OK)
         except Ride.DoesNotExist:
-            data = {'message': 'ride with id ' + id +
-                    ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
+            data = {
+                'message': 'ride with id ' + id + ' was not found.',
+                'status': str(HTTP_404_NOT_FOUND)
+            }
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
     else:
         data = json.loads(request.body.decode("utf-8"))
@@ -100,6 +102,7 @@ def delete_ride(request, id):
                 ' was not found.', 'status': str(HTTP_404_NOT_FOUND)}
         return JsonResponse(data, status=HTTP_404_NOT_FOUND)
 
+
 @csrf_exempt
 @require_http_methods(["GET"])
 def all_rides(request):
@@ -127,7 +130,8 @@ def all_rides(request):
             }
             return JsonResponse(data, status=HTTP_200_OK)
         except UserProfile.DoesNotExist:
-            data = {'message':'No rides found.', 'status': str(HTTP_404_NOT_FOUND)}
+            data = {'message': 'No rides found.',
+                    'status': str(HTTP_404_NOT_FOUND)}
             return JsonResponse(data, status=HTTP_404_NOT_FOUND)
 
 

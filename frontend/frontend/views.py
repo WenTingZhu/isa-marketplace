@@ -24,7 +24,8 @@ def index(request):
 
     # redirect to dashboard if user is already authenticated
     if 'authenticator' in request.session and 'email' in request.session:
-        resp = requests.get('http://experience:8000/verify_authenticator/', headers={'authenticator':request.session['authenticator'], 'email':request.session['email']})
+        resp = requests.get('http://experience:8000/verify_authenticator/', headers={
+                            'authenticator': request.session['authenticator'], 'email': request.session['email']})
         if resp.status_code == HTTP_200_OK:
             return redirect('dashboard')
 
@@ -94,11 +95,20 @@ def create_user(request):
 @csrf_protect
 @require_http_methods(['GET'])
 def error(request):
-    msg = request.GET.get('message','Internal Server Error')
+    msg = request.GET.get('message', 'Internal Server Error')
     signup_form = SignupForm()
     login_form = LoginForm()
     search_form = SearchForm()
-    return render(request, 'error.html', {'message':msg, 'signup_form': signup_form, 'login_form': login_form, 'search_form': search_form})
+    return render(
+        request,
+        'error.html',
+        {
+            'message': msg,
+            'signup_form': signup_form,
+            'login_form': login_form,
+            'search_form': search_form
+        }
+    )
 
 
 @sensitive_post_parameters()
@@ -146,7 +156,7 @@ def logout(request):
     del request.session['email']
     del request.session['authenticator']
     # ignore result
-    requests.post(experience+'unauthenticate_user/')
+    requests.post(experience + 'unauthenticate_user/')
 
     return redirect('index')
 
@@ -188,15 +198,28 @@ def ride_detail(request, id):
     context = {}
     url = experience + "get_ride/" + id + "/"
     response = requests.get(
-        url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
+        url,
+        headers={
+            'authenticator': request.session['authenticator'],
+            'email': request.session['email']
+        }
+    )
+
     if response.status_code == HTTP_200_OK:
         data = response.json()
         data = data["data"]
         context["details"] = data
         context["data"] = data
-        url = experience + "user_detail/{user_id}/".format(user_id=request.session['user_id'])
+        url = experience + \
+            "user_detail/{user_id}/".format(user_id=request.session['user_id'])
         resp = requests.get(
-            url, headers={'authenticator': request.session['authenticator'], 'email': request.session['email']})
+            url,
+            headers={
+                'authenticator': request.session['authenticator'],
+                'email': request.session['email']
+            }
+        )
+
         if resp.status_code == HTTP_200_OK:
             data = resp.json()
             context["full_name"] = data['first_name'] + " " + data['last_name']
@@ -205,8 +228,10 @@ def ride_detail(request, id):
             context['full_name'] = 'Account'
         context['authenticated'] = True
         context['search_form'] = SearchForm()
+
         return render(request, "ride-details.html", context)
     else:
+        return HttpResponse(response.content)
         return redirect('error')
 
 
@@ -300,40 +325,40 @@ def create_ride(request):
     return render(request, "create_ride.html", context)
 
 
-@csrf_protect
 @never_cache
-@require_http_methods(["POST"])
-# Testing only
+@require_http_methods(["POST", "GET"])
 def search(request):
-    form = SearchForm(data=request.POST)
-    if form.is_valid():
-        query = form.cleaned_data['query']
-        url = experience + 'search/'
-        resp = requests.post(url, json={'query': query})
-        if resp.status_code == HTTP_200_OK:
-            return HttpResponse(resp.content)
-        else:
-            return HttpResponse(resp.content)
-    # todo: give some error message to user without breaking page
-    return HttpResponse('Bad search query')
-    return redirect('error')
-
-
-@csrf_protect
-@never_cache
-@require_http_methods(["POST"])
-def search_results(request):
-    context = {}
     if request.method == "POST":
         form = SearchForm(data=request.POST)
         if form.is_valid():
-            data = form.cleaned_data
-            context['query'] = data['query']
-            context['search_form'] = SearchForm()
-            return render(request, "results.html", context)
-        else:
-            return HttpResponse('2')
-            return redirect('error')
-    else:
-        return HttpResponse('6')
+            query = form.cleaned_data['query']
+            url = experience + 'search/'
+            resp = requests.post(url, json={'query': query})
+            if resp.status_code == HTTP_200_OK:
+                return HttpResponse(resp.content)
+            else:
+                return HttpResponse(resp.content)
+        # todo: give some error message to user without breaking page
+        return HttpResponse('Bad search query')
         return redirect('error')
+    else:
+        return render(request, "results.html", context)
+
+# @csrf_protect
+# @never_cache
+# @require_http_methods(["POST", "GET"])
+# def search_results(request):
+#     context = {}
+#     if request.method == "POST":
+#         form = SearchForm(data=request.POST)
+#         if form.is_valid():
+#             data = form.cleaned_data
+#             context['query'] = data['query']
+#             context['search_form'] = SearchForm()
+#             return render(request, "results.html", context)
+#         else:
+#             return HttpResponse('2')
+#             return redirect('error')
+#     else:
+#         return HttpResponse('6')
+#         return redirect('error')
