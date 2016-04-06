@@ -15,5 +15,4 @@ urlpatterns = [
     url(r'^search_results/', 'frontend.views.search_results', name='search_results'),
     url(r'^error/', 'frontend.views.error', name="error"),
     url(r'^search/', 'frontend.views.search', name="search"),
-
 ]

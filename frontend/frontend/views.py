@@ -307,14 +307,16 @@ def search(request):
     form = SearchForm(data=request.POST)
     if form.is_valid():
         data = form.cleaned_data
-    url = experience + 'search/'
-    resp = requests.post(url, json={'query': data['query']})
-    if resp.status_code == HTTP_200_OK:
-        return HttpResponse(resp.content)
-    else:
-        return HttpResponse('FAILED' + str(resp.content))
-        # todo: give some error message to user without breaking page
-
+        query = form.cleaned_data['query']
+        url = experience + 'search/'
+        resp = requests.post(url, json={'query': data['query']})
+        if resp.status_code == HTTP_200_OK:
+            return HttpResponse(resp.content)
+        else:
+            return HttpResponse('FAILED' + str(resp.content))
+    # todo: give some error message to user without breaking page
+    return HttpResponse('Bad search query')
+    return redirect('error')
 
 @csrf_protect
 @never_cache
