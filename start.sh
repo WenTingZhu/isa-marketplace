@@ -12,12 +12,18 @@ sleeptime=30
 
 # these lines can be used to remove all images and containers thus totally resetting docker
 if [ "$#" -eq  "1" ]; then
-    if [ "$1" == "--reset" ]; then
+    if [ "$1" == "--reset-hard" ]; then
       sudo docker images | awk 'NR > 1 {print "sudo docker rmi -f "$3}' | sh
       sudo docker-compose stop
       sudo docker-compose rm
       sleeptime=90
     fi
+    if [ "$1" == "--reset" ]; then
+      sudo docker-compose stop
+      sudo docker-compose rm
+      sleeptime=45
+    fi
+
 fi
 
 

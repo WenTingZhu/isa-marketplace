@@ -81,6 +81,7 @@ def create_user(request):
                     request.session['user_id'] = user_id
                     return redirect('dashboard')
                 else:
+                    return HttpResponse(resp.content)
                     request.session['invalid_login'] = True
                     return redirect('error')
             else:

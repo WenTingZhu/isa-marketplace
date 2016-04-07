@@ -7,7 +7,6 @@ from django.views.decorators.csrf import csrf_protect, csrf_exempt
 # from django.contrib.auth.models import User
 # from django.contrib.auth import authenticate
 from django.db.models import Q
-from datetime import datetime
 from django.utils import formats
 import django.contrib.auth.hashers
 from django.contrib.auth.hashers import check_password

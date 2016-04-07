@@ -51,7 +51,7 @@ topics = {
 }
 
 # sleep to make sure kafka is running
-# time.sleep(30)
+time.sleep(30)
 # producer = KafkaProducer(bootstrap_servers='kafka:9092')
 # if type == CREATE:
 #     kafka_queue = 'create-ride-topic'
