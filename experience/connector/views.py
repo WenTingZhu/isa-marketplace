@@ -148,7 +148,7 @@ def create_ride(request):
         url, json={"driver": data['driver'], "open_seats": data['open_seats'], "departure": data['departure']})
     if resp.status_code == HTTP_201_CREATED:
         new_ride = resp.json()
-        # add_index_to_elastic_search(new_ride['id'])
+        add_index_to_elastic_search(new_ride['id'])
         return JsonResponse({'message': 'Ride Created', 'ride_id': new_ride['id'], 'open_seats': new_ride['open_seats'], 'departure': new_ride['departure']}, status=HTTP_201_CREATED)
     else:
         message = resp.text
@@ -209,21 +209,22 @@ def add_index_to_elastic_search(ride_id):
     It creates a CREATE job and adds that to the kafka queue
     """
     # these are the things that a user will likely use to search for a ride
-    try:
-        url = 'http://models:8000/api/v1/ride/' + ride_id + '/'
-        resp = requests.get(url)
-        if resp.status_code == HTTP_200_OK:
-            data = resp.json()
-            new_ride = {
-                'ride_id':data['ride_id'],
-                'open_seats':data['available_seats'],
-                'departure': data['departure'],
-                'status':data['ride_status'],
-                'dropoffLocations': data['dropoffLocations'],
-            }
-            submit_kafka_job(new_ride, CREATE)
-    except:
-        pass
+    # try:
+
+    url = 'http://models:8000/api/v1/ride/ride/' + ride_id + '/'
+    resp = requests.get(url)
+    if resp.status_code == HTTP_200_OK:
+        data = resp.json()
+        new_ride = {
+            'ride_id':data['ride_id'],
+            'open_seats':data['available_seats'],
+            'departure': data['departure'],
+            'status':data['ride_status'],
+            'dropoffLocations': data['dropoffLocations'],
+        }
+        submit_kafka_job(new_ride, CREATE)
+    # except:
+    #     pass
 
 
 def submit_kafka_job(job, type):
@@ -234,7 +235,6 @@ def submit_kafka_job(job, type):
         kafka_queue = 'update-ride-topic'
     else:
         kafka_queue = 'delete-ride-topic'
-    raise "adding to kafka queue"
     producer.send(kafka_queue, json.dumps(job).encode('utf-8'))
 
 @csrf_exempt

@@ -61,18 +61,23 @@ time.sleep(30)
 #     kafka_queue = 'delete-ride-topic'
 # raise "adding to kafka queue"
 # producer.send(kafka_queue, json.dumps(job).encode('utf-8'))
-while True:
-        """
-        consume the kafka queue
-        """
-        for consumer_name in topics.keys():
-            # KafkaConsumer().ensure_topic_exists(consumer_name, bootstrap_servers=['kafka:9092'])
-            consumer = KafkaConsumer(
-                consumer_name,
-                group_id='ride-indexer',
-                bootstrap_servers=['kafka:9092']
-            )
-            consume.ensure_topic_exists(consumer_name)
-            for message in consumer:
-                job = json.loads((message.value).decode('utf-8'))
-                topics[consumer_name](job)
+# while True:
+#         """
+#         consume the kafka queue
+#         """
+#         for consumer_name in topics.keys():
+#             # KafkaConsumer().ensure_topic_exists(consumer_name, bootstrap_servers=['kafka:9092'])
+#             consumer = KafkaConsumer(
+#                 consumer_name,
+#                 group_id='ride-indexer',
+#                 bootstrap_servers=['kafka:9092']
+#             )
+#             consume.ensure_topic_exists(consumer_name)
+#             for message in consumer:
+#                 job = json.loads((message.value).decode('utf-8'))
+#                 topics[consumer_name](job)
+
+def consume_queue():
+    consumer = KafkaConsumer('create-ride-topic', group_id='ride-indexer', bootstrap_servers=['kafka:9092'])
+    for message in consumer:
+        new_listing = json.loads((message.value).decode('utf-8'))

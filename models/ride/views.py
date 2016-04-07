@@ -32,7 +32,7 @@ def ride(request, id):
                 })
             data = {
                 'ride_status': str(ride.status),
-                'dropOffLocations': dropoffLocations_serialized,
+                'dropoffLocations': dropoffLocations_serialized,
                 'passengers': str(passengers),
                 'departure': str("{:%b %d, %Y %H:%M}".format(ride.departure)),
                 'available_seats': str(ride.openSeats),

@@ -316,8 +316,10 @@ def create_ride(request):
                 context['data'] = data
                 return redirect("ride_detail", int(ride_id))
             else:
+                return HttpResponse(response.content)
                 return redirect('error')
         else:
+            return HttpResponse(response.content)
             return redirect('error')
     create_ride_form = CreateRideForm()
     context['create_ride_form'] = create_ride_form
