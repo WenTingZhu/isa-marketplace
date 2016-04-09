@@ -37,6 +37,7 @@ def ride(request, id):
                 'departure': str("{:%b %d, %Y %H:%M}".format(ride.departure)),
                 'available_seats': str(ride.openSeats),
                 'driver': str(driver),
+                'driver_email':str(driver.email),
                 'status': str(HTTP_200_OK),
                 'ride_id': id,
             }

@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.db.models import Q
 from django.utils import formats
 import django.contrib.auth.hashers
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import check_password, make_password
 # import django settings file
 from rideshare import settings
 from accounts.models import UserProfile, UserAuthenticator
@@ -51,7 +51,7 @@ def user(request, id):
             if not data.get('email', "") == "":
                 user.email = data['email']
             if not data.get('password', "") == "":
-                user.password = data['password']
+                user.password = make_password(data['password'])
             if not data.get('first_name', "") == "":
                 user.first_name = data['first_name']
             if not data.get('last_name', "") == "":
@@ -79,9 +79,8 @@ def authenticate_user(request):
     """
     data = json.loads(request.body.decode("utf-8"))
     email = data['email']
-    password = data['password']
     user = UserProfile.objects.get(email=email)
-    if user.password == password:
+    if check_password(data['password'], user.password):
         # handle case where user is already authenticated
         try:
             auth = UserAuthenticator.objects.get(user=user)
@@ -149,11 +148,6 @@ def verify_authenticator(request):
         # exists
         auth = UserAuthenticator.objects.get(
             authenticator=data['authenticator'])
-        user_via_email = UserProfile.objects.get(email=data['email'])
-        # match
-        if auth.user.id is not user_via_email.id:
-            raise Exception('auth id and email id no match')
-            return JsonResponse({"message": "User not Authenticated", "status": str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
         # not expired
         one_day_old = datetime.datetime.now() - datetime.timedelta(days=1)
         one_day_old = one_day_old.replace(tzinfo=None)
@@ -165,8 +159,6 @@ def verify_authenticator(request):
             auth.delete()
             return JsonResponse({"message": "User not Authenticated", "status": str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
     except django.core.exceptions.ObjectDoesNotExist:
-        raise Exception(
-            'no exist' + data['authenticator'] + ':::::::::::' + data['email'])
         return JsonResponse({"message": "User not Authenticated", "status": str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
     except django.core.exceptions.MultipleObjectsReturned:
         # todo: unauthenticate all UserAuthenticator models that have
@@ -184,11 +176,6 @@ def unauthenticate(request):
     # exists
     auth = UserAuthenticator.objects.get(
         authenticator=data['authenticator'])
-    user_via_email = UserProfile.objects.get(email=data['email'])
-
-    # match
-    if auth.user.id is not user_via_email.id:
-        return JsonResponse({"message": "Invalid Authenticator for email ", "status": str(HTTP_401_UNAUTHORIZED)}, status=HTTP_401_UNAUTHORIZED)
 
     auth.delete()
     return JsonResponse({"message": "User Unauthenticated", "status": str(HTTP_200_OK)}, status=HTTP_200_OK)
@@ -203,7 +190,7 @@ def create_user(request):
     data = json.loads(request.body.decode("utf-8"))
     new_user = UserProfile(
         email=data['email'],
-        password=data['password'],
+        password=make_password(data['password']),
         first_name=data['first_name'],
         last_name=data['last_name'],
         phone=data['phone'],

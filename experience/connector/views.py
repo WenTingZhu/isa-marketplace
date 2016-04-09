@@ -63,13 +63,12 @@ def verify_authenticator(request):
 
 
 def user_logged_in(request):
-    if ('HTTP_AUTHENTICATOR' not in request.META) or ('HTTP_EMAIL' not in request.META):
-        raise Exception('authenticator or email not in request.meta')
+    if ('HTTP_AUTHENTICATOR' not in request.META):
+        raise Exception('authenticator not in request.meta')
         return False
     auth = request.META.get('HTTP_AUTHENTICATOR')
-    email = request.META.get('HTTP_EMAIL')
     url = 'http://models:8000/api/v1/accounts/user/authenticate/verify/'
-    resp = requests.post(url, json={'authenticator': auth, 'email': email})
+    resp = requests.post(url, json={'authenticator': auth})
     if resp.status_code == HTTP_202_ACCEPTED:
         return True
     else:
@@ -83,8 +82,7 @@ def unauthenticate_user(request):
         return JsonResponse({'message': 'User Unauthenticated'}, status=HTTP_200_OK)
     url = 'http://models:8000/api/v1/accounts/user/unauthenticate/'
     auth = request.META.get('HTTP_AUTHENTICATOR')
-    email = request.META.get('HTTP_EMAIL')
-    resp = requests.post(url,json={'authenticator': auth, 'email': email})
+    resp = requests.post(url,json={'authenticator': auth})
     if resp.status_code == HTTP_200_OK:
         return JsonResponse({'message': 'Failed to unauthenticate User'}, status=HTTP_401_UNAUTHORIZED)
     else:
@@ -258,7 +256,18 @@ def search(request):
         results = es.search(index='ride_index', body=query)
         out = []
         for result in results['hits']['hits']:
-            out.append(result['_source'])
+            temp = result['_source']
+            # get more information about the ride
+            url = "http://models:8000/" + "api/v1/ride/ride/" + temp['ride_id'] + "/"
+            resp = requests.get(url)
+            if resp.status_code == HTTP_200_OK:
+                data = resp.json()
+                temp['driver_email'] = data['driver_email']
+                temp['id'] = temp['ride_id']
+                temp['available_seats'] = temp['open_seats']
+                out.append(temp)
+            else:
+                return JsonResponse({'message': 'Ride not found'}, status=HTTP_401_UNAUTHORIZED)
     except NotFoundError:
         out = []
     return JsonResponse({

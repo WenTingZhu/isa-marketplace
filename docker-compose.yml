@@ -46,12 +46,11 @@ kafka:
      ADVERTISED_HOST: kafka
      ADVERTISED_PORT: 9092
    hostname: kafka
-   links:
-     - batch:batch
 batch:
    build: ./batch/
    links:
      - es:es
+     - kafka:kafka
    volumes:
      - ./batch:/code
    ports:
