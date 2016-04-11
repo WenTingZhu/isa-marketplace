@@ -78,14 +78,17 @@ WSGI_APPLICATION = 'rideshare.wsgi.application'
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 DATABASES = {
-          'default': {
-          'ENGINE': 'mysql.connector.django',
-          'NAME': 'cs4501',
-          'USER': 'www',
-          'PASSWORD': 'l33tp455w0rd',
-          'HOST': 'db',
-          }
-      }
+    'default': {
+        'ENGINE': 'mysql.connector.django',
+        'NAME': 'cs4501',
+        'USER': 'www',
+        'PASSWORD': 'l33tp455w0rd',
+        'HOST': 'db',
+        'TEST': {
+          'NAME': 'test_cs4501',
+         }
+    },
+}
 
 
 # Internationalization

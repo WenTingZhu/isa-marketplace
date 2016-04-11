@@ -12,7 +12,7 @@ class UserProfile(models.Model):
 
     phone = models.CharField(blank=True, max_length=15)
     school = models.CharField(blank=True, max_length=50)
-    rating = models.DecimalField(blank=True, max_digits=2, decimal_places=1)
+    rating = models.DecimalField(blank=True, max_digits=1, decimal_places=1)
 
     # contains a Many-toMany to Ride
 
