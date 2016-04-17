@@ -23,7 +23,6 @@ if [ "$#" -eq  "1" ]; then
       sudo docker-compose rm
       sleeptime=45
     fi
-
 fi
 
 

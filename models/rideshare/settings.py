@@ -85,7 +85,7 @@ DATABASES = {
         'PASSWORD': 'l33tp455w0rd',
         'HOST': 'db',
         'TEST': {
-          'NAME': 'test_cs4501',
+          'NAME': 'cs4501',
          }
     },
 }
