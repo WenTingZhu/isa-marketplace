@@ -41,6 +41,7 @@ frontend:
    container_name: frontend
 kafka:
    image: spotify/kafka
+   mem_limit: 256m
    container_name: kafka
    environment:
      ADVERTISED_HOST: kafka

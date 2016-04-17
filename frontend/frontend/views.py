@@ -339,6 +339,7 @@ def search_results(request):
                 context['query'] = query
                 context['search_form'] = SearchForm()
                 context['result_rides'] = resp.json()['results']
+                context['authenticated'] = True
                 # return HttpResponse(context['result_rides'])
                 return render(request, "results.html", context)
             else:
