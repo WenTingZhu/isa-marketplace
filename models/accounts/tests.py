@@ -3,6 +3,7 @@ from accounts.models import UserProfile, UserAuthenticator
 from django.contrib.auth.hashers import check_password, make_password
 from decimal import Decimal, getcontext
 
+
 class UserProfileTestCase(TestCase):
     def setUp(self):
         p = make_password('p')
