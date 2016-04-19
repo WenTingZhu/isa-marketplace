@@ -13,7 +13,6 @@ from .forms import *
 
 experience = "http://" + settings.EXPERIENCE + ":8000/"
 
-
 def index(request):
     """
     GET http://frontend:8000/
@@ -345,7 +344,7 @@ def search_results(request):
             else:
                 return HttpResponse(resp.content)
         else:
-            return HttpResponse('2')
+            return HttpResponse('Blank query')
             return redirect('error')
     else:
         return HttpResponse('6')

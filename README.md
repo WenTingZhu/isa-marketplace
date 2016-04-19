@@ -12,8 +12,6 @@ Folders
 Each has its own folder.
 
 
-
-
 ### Setup
 1. make sure you have docker and docker-compose installed
 2. git clone https://github.com/WenTingZhu/isa-marketplace.git
@@ -38,6 +36,9 @@ If you are going to be creating applications and projects or performing any Djan
   * it may be difficult to install mod_wsgi. If so, then go ahead and go into the setting.py file for the project that you want to work on and simply comment out 'mod_wsgi.server' from INSTALLED_APPS.
   * once you are done modifying the structure of the app, you want to uncomment 'mod_wsgi.server'
 
+* Debug: bash start.sh --reset-hard
+
+* Testing: sudo docker-compose run models python manage.py test
 
 
 ### User stories:
@@ -71,4 +72,4 @@ If you are going to be creating applications and projects or performing any Djan
 * current user information -> display name at top right corner
 * go to home page button
 * menu -> profile page, home page, list of rides page,
-* ride details page 
+* ride details page
