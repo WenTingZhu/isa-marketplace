@@ -17,7 +17,7 @@
     <div class="form-group row">
       {{ create_ride_form.open_seats.errors }}
       <label for="{{ create_ride_form.open_seats.id_for_label }}" class="col-md-8" style="font-weight: normal; font-size: 21px;">Open Seats</label>
-      <div class="col-md-4">
+      <div id="open_seats" class="col-md-4">
         {{ create_ride_form.open_seats }}
         <!-- <input type="number" class="form-control" id="open_seats" name="open_seats" style="width: 250px; float: right;"> -->
       </div>
@@ -25,7 +25,7 @@
     <div class="form-group row">
       {{ create_ride_form.departure.errors }}
       <label for="{{ create_ride_form.departure.id_for_label}}" class="col-md-8" style="font-weight: normal; font-size: 21px;">Departure Date & Time</label>
-      <div class="col-md-4">
+      <div id="departure_time" class="col-md-4">
         {{ create_ride_form.departure }}
         <!-- <input type="datetime-local" class="form-control" id="departure" name="departure" style="width: 250px; float: right;"> -->
       </div>
@@ -36,7 +36,7 @@
     <div style="text-align: center;">
       <div class="btn-group">
         <a href="{% url 'dashboard' %}" class="btn btn-default btn-lg"> Cancel </a>
-        <button type="submit" class="btn btn-primary btn-lg">Create Ride</button>
+        <button id="create_ride_btn" type="submit" class="btn btn-primary btn-lg">Create Ride</button>
       </div>
     </div>
   </form>
