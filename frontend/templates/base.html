@@ -35,13 +35,15 @@
       <ul class="nav navbar-nav navbar-right" style="padding-right: 15px;">
         {% block navbar_content %}
         <!-- Default content -->
+
+        <!--search bar-->
         <li>
           <form role="form" action="{% url 'search_results' %}" method="POST" style="padding-top: 7px;">
             {% csrf_token %}
-            <div class="input-group">
+            <div id="search_query" class="input-group">
               {{ search_form.query }}
               <span class="input-group-btn">
-                <button type="submit" class="btn btn-primary">Search</button>
+                <button id="search_btn" type="submit" class="btn btn-primary">Search</button>
               </span>
             </div>
           </form>
@@ -66,19 +68,21 @@
           </ul>
         </li>
         {% else %}
+
+        <!--login start-->
         <li class="dropdown {% if invalid_login %} open {% endif %}">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" {% if invalid_login %}aria-expanded="true" {% endif %}>Log In</a>
-          <div class="dropdown-menu" style="width: 400px; padding: 15px;">
+          <div id="login" class="dropdown-menu" style="width: 400px; padding: 15px;">
             <form role="form" method="POST" action="{% url 'login' %}" id="login-form">
               {% csrf_token %}
               <!-- {{ login_form }} -->
               {{ login_form.non_field_errors }}
-              <div class="form-group">
+              <div id="login_email" class="form-group">
                 {{ login_form.email.errors }}
                 <label for="{{ login_form.email.id_for_label }}">Email:</label>
                 {{ login_form.email }}
               </div>
-              <div class="form-group">
+              <div id="login_password" class="form-group">
                 {{ login_form.password.errors }}
                 <label for="{{ login_form.password.id_for_label }}">Password:</label>
                 {{ login_form.password }}
@@ -92,6 +96,7 @@
             </form>
           </div>
         </li>
+
         <!--signup start-->
         <li class="dropdown {% if invalid_login %} open {% endif %}">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" {% if invalid_login %}aria-expanded="true" {% endif %}>Sign Up</a>
@@ -100,38 +105,38 @@
               {% csrf_token %}
               <!-- {{ signup_form }} -->
               {{ signup_form.non_field_errors }}
-              <div class="form-group">
+              <div id="signup_email" class="form-group">
                 {{ signup_form.email.errors }}
                 <label for="{{ signup_form.email.id_for_label}}">Email:</label>
                 {{ signup_form.email }}
               </div>
-              <div class="form-group">
+              <div id="signup_pwd" class="form-group">
                 {{ signup_form.password.errors }}
                 <label for="{{ signup_form.password.id_for_label }}">Password:</label>
                 {{ signup_form.password }}
               </div>
-              <div class="form-group">
+              <div id="signup_firstname" class="form-group">
                 {{ signup_form.first_name.errors }}
                 <label for="{{ signup_form.first_name.id_for_label }}">First Name:</label>
                 {{ signup_form.first_name }}
               </div>
-              <div class="form-group">
+              <div id="signup_lastname" class="form-group">
                 {{ signup_form.last_name.errors }}
                 <label for="{{ signup_form.last_name.id_for_label }}">Last Name:</label>
                 {{ signup_form.last_name }}
               </div>
-              <div class="form-group">
+              <div id="signup_phone" class="form-group">
                 {{ signup_form.phone.errors }}
                 <label for="{{ signup_form.phone.id_for_label }}">Phone Number:</label>
                 {{ signup_form.phone }}
               </div>
-              <div class="form-group">
+              <div id="signup_school" class="form-group">
                 {{ signup_form.school.errors }}
                 <label for="{{ signup_form.school.id_for_label }}">School:</label>
                 {{ signup_form.school }}
               </div>
               <div style="text-align: center;">
-                <button type="submit" id="login-btn" class="btn btn-primary">Sign Up</button>
+                <button type="submit" id="signup-btn" class="btn btn-primary">Sign Up</button>
               </div>
             </form>
           </div>

@@ -6,6 +6,7 @@ from django.test import Client
 from accounts.status_codes import *
 import json
 
+
 class UserProfileTestCase(TestCase):
     def setUp(self):
         p = make_password('p')
