@@ -55,25 +55,9 @@ def create_new_ride(new_ride):
 time.sleep(30)
 
 
-# while True:
-#         """
-#         consume the kafka queue
-#         """
-#         for consumer_name in topics.keys():
-#             # KafkaConsumer().ensure_topic_exists(consumer_name, bootstrap_servers=['kafka:9092'])
-#             consumer = KafkaConsumer(
-#                 consumer_name,
-#                 group_id='ride-indexer',
-#                 bootstrap_servers=['kafka:9092']
-#             )
-#             consume.ensure_topic_exists(consumer_name)
-#             for message in consumer:
-#                 job = json.loads((message.value).decode('utf-8'))
-#                 topics[consumer_name](job)
-
-
 
 def consume_queue():
+    """Consume the kafka queue"""
     consumer_name = 'create-ride-topic'
     consumer = KafkaConsumer(
         consumer_name,
@@ -87,4 +71,5 @@ def consume_queue():
 
 
 while True:
+    print('Starting Kafka Consumer Queue')
     consume_queue()

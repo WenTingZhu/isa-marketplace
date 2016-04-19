@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-import json, os, hmac, datetime
+import json
+import os
+import hmac
+import datetime
 from django.views.decorators.http import require_http_methods
 from accounts.status_codes import *
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
@@ -141,7 +144,7 @@ def create_authenticator_string():
 @require_http_methods(['POST'])
 def verify_authenticator(request):
     """
-    POST http://models:8000/api/v1/accounts/authenticate/verify/
+    POST http://models:8000/api/v1/accounts/user/authenticate/verify/
     """
     try:
         data = json.loads(request.body.decode("utf-8"))
@@ -170,7 +173,7 @@ def verify_authenticator(request):
 @require_http_methods(['POST'])
 def unauthenticate(request):
     """
-    POST http://models:8000/api/v1/accounts/unauthenticate/
+    POST http://models:8000/api/v1/accounts/user/unauthenticate/
     """
     data = json.loads(request.body.decode("utf-8"))
     # exists
