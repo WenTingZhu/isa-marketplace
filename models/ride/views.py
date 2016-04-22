@@ -37,7 +37,7 @@ def ride(request, id):
                 'departure': str("{:%b %d, %Y %H:%M}".format(ride.departure)),
                 'available_seats': str(ride.openSeats),
                 'driver': str(driver),
-                'driver_email':str(driver.email),
+                'driver_email': str(driver.email),
                 'status': str(HTTP_200_OK),
                 'ride_id': id,
             }
@@ -79,11 +79,19 @@ def create_ride(request):
     data = json.loads(request.body.decode("utf-8"))
     # driver = UserProfile.objects.get(user=request.user)
     driver = UserProfile.objects.get(pk=data['driver'])
-    new_ride = Ride(driver=driver, openSeats=data[
-                    'open_seats'], departure=data['departure'], status=0)
+    new_ride = Ride(
+        driver=driver,
+        openSeats=data['open_seats'],
+        departure=data['departure'],
+        status=0
+    )
     new_ride.save()
-    data = {'status': str(HTTP_201_CREATED), 'id': str(new_ride.id),
-            'open_seats': new_ride.openSeats, 'departure': new_ride.departure}
+    data = {
+        'status': str(HTTP_201_CREATED),
+        'id': str(new_ride.id),
+        'open_seats': new_ride.openSeats,
+        'departure': new_ride.departure
+    }
     return JsonResponse(data, status=HTTP_201_CREATED)
 
 
@@ -111,29 +119,26 @@ def all_rides(request):
     GET http://models:8000/api/v1/ride/rides/
     """
     if request.method == 'GET':
-        try:
-            # user = UserProfile.objects.get(pk=id)
-            # rides = Ride.objects.filter(driver=id)
-            rides = Ride.objects.all()
-            rides_list = []
-            for ride in rides:
-                driver_ride = {}
-                driver_ride["id"] = ride.pk
-                driver_ride["driver"] = str(ride.driver)
-                driver_ride["available_seats"] = str(ride.openSeats)
-                driver_ride["departure"] = str(
-                    "{:%b %d, %Y %H:%M}".format(ride.departure))
-                driver_ride["status"] = str(ride.status)
-                rides_list.append(driver_ride)
-            data = {
-                'rides_list': json.dumps(rides_list),
-                'status': str(HTTP_200_OK)
-            }
-            return JsonResponse(data, status=HTTP_200_OK)
-        except UserProfile.DoesNotExist:
-            data = {'message': 'No rides found.',
-                    'status': str(HTTP_404_NOT_FOUND)}
-            return JsonResponse(data, status=HTTP_404_NOT_FOUND)
+        # user = UserProfile.objects.get(pk=id)
+        # rides = Ride.objects.filter(driver=id)
+        rides = Ride.objects.all()
+        rides_list = []
+        for ride in rides:
+            driver_ride = {}
+            driver_ride["id"] = ride.pk
+            driver_ride["driver"] = str(ride.driver)
+            driver_ride["available_seats"] = str(ride.openSeats)
+            driver_ride["departure"] = str(
+                "{:%b %d, %Y %H:%M}".format(ride.departure))
+            driver_ride["status"] = str(ride.status)
+            rides_list.append(driver_ride)
+        data = {
+            'rides_list': json.dumps(rides_list),
+            'status': str(HTTP_200_OK)
+        }
+        return JsonResponse(data, status=HTTP_200_OK)
+
+    return JsonResponse({'message':'invalid request', 'status': str(HTTP_404_NOT_FOUND)}, status=HTTP_404_NOT_FOUND)
 
 
 @csrf_exempt

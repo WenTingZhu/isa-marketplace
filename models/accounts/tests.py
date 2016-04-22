@@ -61,6 +61,8 @@ class UserViewTestCase(TestCase):
     def setUp(self):
         p = make_password('p')
         UserProfile.objects.create(first_name="Himanshu", last_name="Ojha", email="ho2es@virginia.edu", phone="703-953-1414", school="uva", rating=4, password=p)
+        p = make_password('p2')
+        UserProfile.objects.create(first_name="Revanth", last_name="Kolli", email="rk8mt@virginia.edu", phone="234-333-3433", school="uva", rating=5, password=p)
 
     def test_create_basic_user(self):
         c = Client()
@@ -178,7 +180,14 @@ class UserViewTestCase(TestCase):
 
     def test_user_rides(self):
         c=Client()
-        email ='ho2es@virginia.edu'
-        himanshu = UserProfile.objects.get(email=email)
-        c.put('/api/v1/ride/ride/', )
-        response = c.get('/api/v1/accounts/user/{}/rides/'.format(himanshu.id))
+        email ='234@virginia.edu'
+        UserProfile.objects.create(first_name="noob", last_name="Ojha", email=email, phone="703-953-1414", school="uva", rating=4, password='sdf')
+        noob = UserProfile.objects.get(email=email)
+        revanth = UserProfile.objects.get(email='rk8mt@virginia.edu')
+        c.put('/api/v1/ride/ride/', json.dumps({'driver':noob.id, 'open_seats':3, 'departure': '1994-12-11 11:11'}))
+        c.put('/api/v1/ride/ride/', json.dumps({'driver':noob.id, 'open_seats':3, 'departure': '1994-12-11 11:11'}))
+        response = c.put('/api/v1/ride/ride/', json.dumps({'driver':revanth.id, 'open_seats':3, 'departure': '1994-12-11 11:11'}))
+        response = c.get('/api/v1/accounts/user/{}/rides/'.format(noob.id))
+        data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(len(json.loads(data['driver_rides'])), 2)
+        self.assertEqual(len(json.loads(data['passenger_rides'])), 0)

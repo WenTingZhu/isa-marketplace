@@ -19,18 +19,26 @@ class DropoffLocation(models.Model):
 
 class Ride(models.Model):
     driver = models.ForeignKey(
-        UserProfile, on_delete=models.SET_NULL, null=True)
+        UserProfile,
+        on_delete=models.SET_NULL,
+        null=True
+    )
     openSeats = models.IntegerField()
     departure = models.DateTimeField()
     status = models.IntegerField(choices=STATUS_CHOICES)
     passenger = models.ManyToManyField(
-        UserProfile, related_name='ride_passenger')
+        UserProfile,
+        related_name='ride_passenger'
+    )
     dropoffLocation = models.ManyToManyField(DropoffLocation)
 
 
 class RideRequest(models.Model):
     passenger = models.ForeignKey(
-        UserProfile, on_delete=models.SET_NULL, null=True)
+        UserProfile,
+        on_delete=models.SET_NULL,
+        null=True
+    )
     ride = models.ForeignKey(Ride, on_delete=models.SET_NULL, null=True)
     driverConfirm = models.BooleanField()
     rideConfirm = models.BooleanField()
