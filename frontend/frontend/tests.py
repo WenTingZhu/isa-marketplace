@@ -49,7 +49,7 @@ class AccountsTestCase(unittest.TestCase):
     # Need to manually click on Sign up button for test case to work
     def testcreateUser(self):
         self.driver.get('http://localhost:8002/')
-        WebDriverWait(self.driver, 10).until(lambda s: s.find_element_by_id("signup_email").is_displayed())
+        WebDriverWait(self.driver, 15).until(lambda s: s.find_element_by_id("signup-btn").is_displayed())
         actions = ActionChains(self.driver)
         signup_email = self.driver.find_element_by_id("signup_email")
         actions.move_to_element(signup_email).click()
@@ -57,14 +57,12 @@ class AccountsTestCase(unittest.TestCase):
         signup_password = self.driver.find_element_by_id("signup_pwd")
         actions.move_to_element(signup_password).click()
         actions.send_keys("1")
-        actions = ActionChains(self.driver)
         signup_firstname = self.driver.find_element_by_id("signup_firstname")
         actions.move_to_element(signup_firstname).click()
         actions.send_keys("1")
         signup_lastname = self.driver.find_element_by_id("signup_lastname")
         actions.move_to_element(signup_lastname).click()
         actions.send_keys("1")
-        actions = ActionChains(self.driver)
         signup_phone = self.driver.find_element_by_id("signup_phone")
         actions.move_to_element(signup_phone).click()
         actions.send_keys("1")
